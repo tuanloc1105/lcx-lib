@@ -1,12 +1,12 @@
 package vn.com.lcx.common.utils;
 
 import org.apache.commons.lang3.StringUtils;
-import vn.com.lcx.common.constant.Constant;
+import vn.com.lcx.common.constant.CommonConstant;
 
 public final class PdfGenerator {
 
     private static final String CONVERT_HTML_TO_PDF_SCRIPT_NAME = FileUtils.pathJoining(
-            Constant.ROOT_DIRECTORY_PROJECT_PATH,
+            CommonConstant.ROOT_DIRECTORY_PROJECT_PATH,
             "additional-source",
             "python",
             "convert_html_to_pdf"
@@ -21,7 +21,7 @@ public final class PdfGenerator {
         }
         ShellCommandRunningUtils.runWithProcessBuilder(
                 String.format(
-                        Constant.CALLING_PYTHON_CODE_COMMAND_LINE,
+                        CommonConstant.CALLING_PYTHON_CODE_COMMAND_LINE,
                         CONVERT_HTML_TO_PDF_SCRIPT_NAME,
                         String.format(
                                 "\"%s\" \"%s\"",
@@ -29,7 +29,7 @@ public final class PdfGenerator {
                                 outputPath
                         )
                 ),
-                Constant.ROOT_DIRECTORY_PROJECT_PATH
+                CommonConstant.ROOT_DIRECTORY_PROJECT_PATH
         );
     }
 }

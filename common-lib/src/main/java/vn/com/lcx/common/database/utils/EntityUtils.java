@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import vn.com.lcx.common.annotation.ColumnName;
 import vn.com.lcx.common.annotation.IdColumn;
 import vn.com.lcx.common.annotation.TableName;
-import vn.com.lcx.common.constant.Constant;
+import vn.com.lcx.common.constant.CommonConstant;
 import vn.com.lcx.common.constant.JavaSqlResultSetConstant;
 import vn.com.lcx.common.scanner.PackageScanner;
 import vn.com.lcx.common.utils.DateTimeUtils;
@@ -85,10 +85,10 @@ public final class EntityUtils {
     public static void entityAnalysis(final String packageName, final String databaseType) {
         try {
             String folderPath = FileUtils.pathJoining(
-                    Constant.ROOT_DIRECTORY_PROJECT_PATH,
+                    CommonConstant.ROOT_DIRECTORY_PROJECT_PATH,
                     "data",
                     "sql",
-                    DateTimeUtils.generateCurrentLocalDateDefault().format(DateTimeFormatter.ofPattern(Constant.DEFAULT_LOCAL_DATE_STRING_PATTERN))
+                    DateTimeUtils.generateCurrentLocalDateDefault().format(DateTimeFormatter.ofPattern(CommonConstant.DEFAULT_LOCAL_DATE_STRING_PATTERN))
             );
             FileUtils.deleteFolder(new File(folderPath));
             createFolderIfNotExists(folderPath);
@@ -126,7 +126,7 @@ public final class EntityUtils {
                         finalTableName = tableNameValue;
                     }
 
-                    String createSequenceStatement = Constant.EMPTY_STRING;
+                    String createSequenceStatement = CommonConstant.EMPTY_STRING;
                     List<List<String>> columnDefinitionLines = new ArrayList<>();
 
                     List<String> alterAddColumnList = new ArrayList<>();
@@ -400,7 +400,7 @@ public final class EntityUtils {
                     alterAddColumnList = alterAddColumnList.stream().filter(StringUtils::isNotBlank).collect(Collectors.toList());
                     alterDropColumnList = alterDropColumnList.stream().filter(StringUtils::isNotBlank).collect(Collectors.toList());
                     alterModifyColumnList = alterModifyColumnList.stream().filter(StringUtils::isNotBlank).collect(Collectors.toList());
-                    val generatedTime = DateTimeUtils.generateCurrentTimeDefault().format(DateTimeFormatter.ofPattern(Constant.DEFAULT_LOCAL_DATE_TIME_STRING_PATTERN));
+                    val generatedTime = DateTimeUtils.generateCurrentTimeDefault().format(DateTimeFormatter.ofPattern(CommonConstant.DEFAULT_LOCAL_DATE_TIME_STRING_PATTERN));
                     String createTableStatement = String.format(
                             String.format("-- GENERATED AT %s BY LOCVT\n\n", generatedTime) +
                                     "-- ################# CREATE INDEX ####################### --\n" +
@@ -426,7 +426,7 @@ public final class EntityUtils {
                             String.join(System.lineSeparator(), alterAddColumnList),
                             String.join(System.lineSeparator(), alterDropColumnList),
                             String.join(System.lineSeparator(), alterModifyColumnList),
-                            (StringUtils.isBlank(createSequenceStatement) ? Constant.EMPTY_STRING : "\n" + createSequenceStatement + "\n"),
+                            (StringUtils.isBlank(createSequenceStatement) ? CommonConstant.EMPTY_STRING : "\n" + createSequenceStatement + "\n"),
                             String.format(
                                     CREATE_TABLE_TEMPLATE_NO_PRIMARY_KEY,
                                     finalTableName,

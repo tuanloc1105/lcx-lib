@@ -8,7 +8,7 @@ import vn.com.lcx.common.annotation.Modifying;
 import vn.com.lcx.common.annotation.Query;
 import vn.com.lcx.common.annotation.Repository;
 import vn.com.lcx.common.annotation.TableName;
-import vn.com.lcx.common.constant.Constant;
+import vn.com.lcx.common.constant.CommonConstant;
 import vn.com.lcx.common.utils.ExceptionUtils;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -57,7 +57,7 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
             if (annotatedElement instanceof TypeElement) {
                 TypeElement typeElement = (TypeElement) annotatedElement;
                 try {
-                    String className = typeElement.getSimpleName() + Constant.EMPTY_STRING;
+                    String className = typeElement.getSimpleName() + CommonConstant.EMPTY_STRING;
                     String packageName = this.processingEnv.getElementUtils().getPackageOf(typeElement).getQualifiedName().toString();
                     String fullClassName = packageName + "." + className;
                     HashSet<Element> fieldsOfClass = this.getAllFields(typeElement);
@@ -285,7 +285,7 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
             }
 
             for (ExecutableElement method : allMethodsOfClass) {
-                String methodName = method.getSimpleName() + Constant.EMPTY_STRING;
+                String methodName = method.getSimpleName() + CommonConstant.EMPTY_STRING;
                 List<? extends VariableElement> parameters = method.getParameters();
                 TypeMirror returnType = method.getReturnType();
 
@@ -331,7 +331,7 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
                     .collect(Collectors.toList());
 
             for (MethodInfo methodInfo : methodsToParse) {
-                final String returnClass = methodInfo.getOutputParameter() + Constant.EMPTY_STRING;
+                final String returnClass = methodInfo.getOutputParameter() + CommonConstant.EMPTY_STRING;
                 final String builderClassOfReturnClass;
                 final String returnDatatype;
                 boolean firstParameterIsNotConnectionType = !(this.typeUtils.isAssignable(
@@ -347,10 +347,10 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
                     if (!typeArguments.isEmpty()) {
                         TypeMirror typeArgument = typeArguments.get(0);
                         builderClassOfReturnClass = typeArgument + "Builder";
-                        returnDatatype = typeArgument + Constant.EMPTY_STRING;
+                        returnDatatype = typeArgument + CommonConstant.EMPTY_STRING;
                     } else {
                         builderClassOfReturnClass = methodInfo.getOutputParameter() + "Builder";
-                        returnDatatype = methodInfo.getOutputParameter() + Constant.EMPTY_STRING;
+                        returnDatatype = methodInfo.getOutputParameter() + CommonConstant.EMPTY_STRING;
                     }
                 } else {
                     HashSet<Element> tempElements = entitiesClass.get(returnClass);
@@ -358,7 +358,7 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
                         tempElements = entitiesClass.get(genericEntityClass.toString());
                     }
                     builderClassOfReturnClass = returnClass + "Builder";
-                    returnDatatype = methodInfo.getOutputParameter() + Constant.EMPTY_STRING;
+                    returnDatatype = methodInfo.getOutputParameter() + CommonConstant.EMPTY_STRING;
                 }
                 final List<String> asd = methodInfo.getInputParameters().stream()
                         .filter(e -> !"vn.com.lcx.common.database.pool.entry.ConnectionEntry".equals(e.asType().toString()))
@@ -386,7 +386,7 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
                 String pageableParameterName = "";
 
                 if (methodInfo.getInputParameters().size() == 1) {
-                    mapPutCode = Constant.EMPTY_STRING;
+                    mapPutCode = CommonConstant.EMPTY_STRING;
                     if (methodInfo.getMethodName().startsWith("count")) {
                         databaseExecutorCode = String.format(
                                 "" +
@@ -422,7 +422,7 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
                             "" +
                                     "java.util.Map<Integer, Object> map = new java.util.HashMap<>();\n" +
                                     "        int startingPosition = 0;" :
-                            Constant.EMPTY_STRING;
+                            CommonConstant.EMPTY_STRING;
                     for (int i = 1; i < methodInfo.getInputParameters().size(); i++) {
                         // skip pageable input parameter
                         if (
@@ -1099,7 +1099,7 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
                 }
             }
             return listOfCodeLine.isEmpty() ?
-                    Constant.EMPTY_STRING :
+                    CommonConstant.EMPTY_STRING :
                     String.join(System.lineSeparator(), listOfCodeLine);
         }
 
@@ -1215,7 +1215,7 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
                 }
             }
             return listOfCodeLine.isEmpty() ?
-                    Constant.EMPTY_STRING :
+                    CommonConstant.EMPTY_STRING :
                     String.join(System.lineSeparator(), listOfCodeLine);
         }
 
@@ -1243,7 +1243,7 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
         }
 
         private String findColumnNameOfField(HashSet<Element> allElementsOfReturnClass, final String fieldName) {
-            String databaseColumnNameToBeGet = Constant.EMPTY_STRING;
+            String databaseColumnNameToBeGet = CommonConstant.EMPTY_STRING;
             for (Element element : allElementsOfReturnClass) {
                 if (element.getSimpleName().toString().equals(fieldName)) {
                     ColumnName columnNameAnnotation = element.getAnnotation(ColumnName.class);
@@ -1281,7 +1281,7 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
                                               final boolean isFindAllOrSaveOrDeleteMethod,
                                               final HashSet<Element> elements) {
             if (StringUtils.isNotBlank(methodInfo.getNativeQueryValue())) {
-                return Constant.EMPTY_STRING;
+                return CommonConstant.EMPTY_STRING;
             }
             StringBuilder extraSQLStatment = new StringBuilder();
 

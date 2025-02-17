@@ -11,7 +11,7 @@ import vn.com.lcx.common.annotation.Repository;
 import vn.com.lcx.common.annotation.Verticle;
 import vn.com.lcx.common.annotation.mapper.Mapper;
 import vn.com.lcx.common.annotation.mapper.MapperClass;
-import vn.com.lcx.common.constant.Constant;
+import vn.com.lcx.common.constant.CommonConstant;
 import vn.com.lcx.common.database.DatabaseExecutor;
 import vn.com.lcx.common.database.DatabaseExecutorImpl;
 import vn.com.lcx.common.database.repository.LCXRepository;
@@ -38,9 +38,9 @@ public class ClassPool {
         ClassLoader classLoader = ClassPool.class.getClassLoader();
         val configFile = System.getProperty("application_config.file");
         if (configFile != null) {
-            Constant.applicationConfig = PropertiesUtils.getProperties(configFile);
+            CommonConstant.applicationConfig = PropertiesUtils.getProperties(configFile);
         } else {
-            Constant.applicationConfig = PropertiesUtils.getProperties(classLoader, "application.yaml");
+            CommonConstant.applicationConfig = PropertiesUtils.getProperties(classLoader, "application.yaml");
         }
         try {
             final List<Class<?>> listOfClassInPackage = new ArrayList<>();

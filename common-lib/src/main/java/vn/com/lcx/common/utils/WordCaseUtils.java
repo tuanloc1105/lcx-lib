@@ -1,6 +1,6 @@
 package vn.com.lcx.common.utils;
 
-import vn.com.lcx.common.constant.Constant;
+import vn.com.lcx.common.constant.CommonConstant;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ public final class WordCaseUtils {
     }
 
     public static String pascalToNormal(String pascal) {
-        return (pascal.replaceAll("([a-z])([A-Z])", "$1 $2")).toLowerCase().replace("exception", Constant.EMPTY_STRING);
+        return (pascal.replaceAll("([a-z])([A-Z])", "$1 $2")).toLowerCase().replace("exception", CommonConstant.EMPTY_STRING);
     }
 
     public static String convertAllCase(String stringToConvertToNormalText,

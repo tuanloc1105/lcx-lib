@@ -1,5 +1,7 @@
 package vn.com.lcx.common.database.handler.statement;
 
+import vn.com.lcx.common.constant.CommonConstant;
+
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -20,7 +22,7 @@ public class StringHandler implements SqlStatementHandler {
             throw new IllegalArgumentException("statement is not a PreparedStatement");
         }
         if (input == null) {
-            ((PreparedStatement) statement).setString(index, vn.com.lcx.common.constant.Constant.EMPTY_STRING);
+            ((PreparedStatement) statement).setString(index, CommonConstant.EMPTY_STRING);
         } else {
             if (!(input instanceof String)) {
                 throw new IllegalArgumentException("input is not a boolean");

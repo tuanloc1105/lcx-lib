@@ -3,7 +3,7 @@ package vn.com.lcx.common.utils;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
-import vn.com.lcx.common.constant.Constant;
+import vn.com.lcx.common.constant.CommonConstant;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -26,7 +26,7 @@ public final class ShellCommandRunningUtils {
     public static List<String> runWithProcessBuilder(String cmd, String directory, int... timeoutSecond) {
         try {
             if (StringUtils.isBlank(directory)) {
-                directory = Constant.ROOT_DIRECTORY_PROJECT_PATH;
+                directory = CommonConstant.ROOT_DIRECTORY_PROJECT_PATH;
             }
             LogUtils.writeLog(
                     LogUtils.Level.INFO,

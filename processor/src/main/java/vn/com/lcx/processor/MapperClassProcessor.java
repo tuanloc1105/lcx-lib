@@ -4,7 +4,7 @@ import vn.com.lcx.common.annotation.ExcludingField;
 import vn.com.lcx.common.annotation.mapper.MapperClass;
 import vn.com.lcx.common.annotation.mapper.Mapping;
 import vn.com.lcx.common.annotation.mapper.Merging;
-import vn.com.lcx.common.constant.Constant;
+import vn.com.lcx.common.constant.CommonConstant;
 import vn.com.lcx.common.utils.WordCaseUtils;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -68,8 +68,8 @@ public class MapperClassProcessor extends AbstractProcessor {
                 .map(member -> (ExecutableElement) member).collect(Collectors.toList());
         List<String> listOfImplementMethodCode = new ArrayList<>();
         for (ExecutableElement methodsOfClass : allMethodsOfClass) {
-            String methodName = methodsOfClass.getSimpleName() + Constant.EMPTY_STRING;
-            String methodReturnClass = methodsOfClass.getReturnType() + Constant.EMPTY_STRING;
+            String methodName = methodsOfClass.getSimpleName() + CommonConstant.EMPTY_STRING;
+            String methodReturnClass = methodsOfClass.getReturnType() + CommonConstant.EMPTY_STRING;
             List<? extends VariableElement> methodParameters = methodsOfClass.getParameters();
 
             // Currently support mapping for class to class only
@@ -77,8 +77,8 @@ public class MapperClassProcessor extends AbstractProcessor {
                 throw new RuntimeException("Method must have 1 or 2 parameter(s)");
             }
 
-            String firstInputParameterClass = methodParameters.get(0).asType() + Constant.EMPTY_STRING;
-            String firstInputParameterName = methodParameters.get(0).getSimpleName() + Constant.EMPTY_STRING;
+            String firstInputParameterClass = methodParameters.get(0).asType() + CommonConstant.EMPTY_STRING;
+            String firstInputParameterName = methodParameters.get(0).getSimpleName() + CommonConstant.EMPTY_STRING;
 
             Merging merging = methodsOfClass.getAnnotation(Merging.class);
 
@@ -86,8 +86,8 @@ public class MapperClassProcessor extends AbstractProcessor {
                 if (methodParameters.size() != 2) {
                     throw new RuntimeException("Merging 2 parameters");
                 }
-                String secondInputParameterClass = methodParameters.get(1).asType() + Constant.EMPTY_STRING;
-                String secondInputParameterName = methodParameters.get(1).getSimpleName() + Constant.EMPTY_STRING;
+                String secondInputParameterClass = methodParameters.get(1).asType() + CommonConstant.EMPTY_STRING;
+                String secondInputParameterName = methodParameters.get(1).getSimpleName() + CommonConstant.EMPTY_STRING;
                 listOfImplementMethodCode.addAll(
                         this.buildMergingCode(
                                 methodName,
@@ -120,7 +120,7 @@ public class MapperClassProcessor extends AbstractProcessor {
                     "package %s;\n\nimport java.util.*;\n\npublic class %s implements %s {\n\n    public %s() {\n    }\n    %s\n\n}",
                     packageName,
                     className,
-                    typeElement.getSimpleName() + Constant.EMPTY_STRING,
+                    typeElement.getSimpleName() + CommonConstant.EMPTY_STRING,
                     className,
                     String.join("", listOfImplementMethodCode)
             );
@@ -147,7 +147,7 @@ public class MapperClassProcessor extends AbstractProcessor {
         List<Element> firstClassFields = new ArrayList<>(this.getAllFields(firstClassTypeElement));
         List<String> listOfMappingLineCodes = new ArrayList<>();
         for (Element field : firstClassFields) {
-            String fieldName = WordCaseUtils.toPascalCase(WordCaseUtils.fromCamelCase(field.getSimpleName() + Constant.EMPTY_STRING));
+            String fieldName = WordCaseUtils.toPascalCase(WordCaseUtils.fromCamelCase(field.getSimpleName() + CommonConstant.EMPTY_STRING));
             final String mappingLineCode;
             if (mergeNonNullField) {
                 mappingLineCode = String.format(
@@ -203,17 +203,17 @@ public class MapperClassProcessor extends AbstractProcessor {
         List<String> listOfMappingLineCodes = new ArrayList<>();
         if (listOfMappingAnnotations.isEmpty()) {
             for (Element outputClassField : outputClassFields) {
-                String toFieldName = WordCaseUtils.toPascalCase(WordCaseUtils.fromCamelCase(outputClassField.getSimpleName() + Constant.EMPTY_STRING));
-                String toFieldType = outputClassField.asType() + Constant.EMPTY_STRING;
+                String toFieldName = WordCaseUtils.toPascalCase(WordCaseUtils.fromCamelCase(outputClassField.getSimpleName() + CommonConstant.EMPTY_STRING));
+                String toFieldType = outputClassField.asType() + CommonConstant.EMPTY_STRING;
                 Element inputClassField = this.findAppropriateFieldOfInputClassFromOutputFieldName(
                         inputClassFields,
-                        outputClassField.getSimpleName() + Constant.EMPTY_STRING,
+                        outputClassField.getSimpleName() + CommonConstant.EMPTY_STRING,
                         toFieldType
                 );
                 if (inputClassField == null) {
                     continue;
                 }
-                String fromFieldName = WordCaseUtils.toPascalCase(WordCaseUtils.fromCamelCase(inputClassField.getSimpleName() + Constant.EMPTY_STRING));
+                String fromFieldName = WordCaseUtils.toPascalCase(WordCaseUtils.fromCamelCase(inputClassField.getSimpleName() + CommonConstant.EMPTY_STRING));
                 if (fromFieldName.equals(toFieldName)) {
                     String mappingLineCode = String.format(
                             mappingLineCodeTemplate,
@@ -248,20 +248,20 @@ public class MapperClassProcessor extends AbstractProcessor {
                 handledFieldName.add(toField);
             }
             for (Element outputClassField : outputClassFields) {
-                String toFieldType = outputClassField.asType() + Constant.EMPTY_STRING;
+                String toFieldType = outputClassField.asType() + CommonConstant.EMPTY_STRING;
                 if (handledFieldName.contains(toFieldType)) {
                     continue;
                 }
-                String toFieldName = WordCaseUtils.toPascalCase(WordCaseUtils.fromCamelCase(outputClassField.getSimpleName() + Constant.EMPTY_STRING));
+                String toFieldName = WordCaseUtils.toPascalCase(WordCaseUtils.fromCamelCase(outputClassField.getSimpleName() + CommonConstant.EMPTY_STRING));
                 Element inputClassField = this.findAppropriateFieldOfInputClassFromOutputFieldName(
                         inputClassFields,
-                        outputClassField.getSimpleName() + Constant.EMPTY_STRING,
+                        outputClassField.getSimpleName() + CommonConstant.EMPTY_STRING,
                         toFieldType
                 );
                 if (inputClassField == null) {
                     continue;
                 }
-                String fromFieldName = WordCaseUtils.toPascalCase(WordCaseUtils.fromCamelCase(inputClassField.getSimpleName() + Constant.EMPTY_STRING));
+                String fromFieldName = WordCaseUtils.toPascalCase(WordCaseUtils.fromCamelCase(inputClassField.getSimpleName() + CommonConstant.EMPTY_STRING));
                 if (fromFieldName.equals(toFieldName)) {
                     String mappingLineCode = String.format(
                             mappingLineCodeTemplate,
@@ -315,7 +315,7 @@ public class MapperClassProcessor extends AbstractProcessor {
         return allElementOfAClass.stream()
                 .filter(
                         e ->
-                                (e.getSimpleName() + Constant.EMPTY_STRING).equals(fieldName) && (e.asType() + Constant.EMPTY_STRING).equals(fieldDataType)
+                                (e.getSimpleName() + CommonConstant.EMPTY_STRING).equals(fieldName) && (e.asType() + CommonConstant.EMPTY_STRING).equals(fieldDataType)
                 )
                 .findAny().orElse(null);
     }

@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import vn.com.lcx.common.config.BuildGson;
-import vn.com.lcx.common.constant.Constant;
+import vn.com.lcx.common.constant.CommonConstant;
 import vn.com.lcx.common.utils.DateTimeUtils;
 import vn.com.lcx.common.utils.LogUtils;
 import vn.com.lcx.vertx.base.constant.VertxBaseConstant;
@@ -135,7 +135,7 @@ public class BaseController {
     protected String getNoneRequiringRequestQueryParam(RoutingContext context, String paramName) {
         val paramValue = context.queryParam(paramName);
         if (CollectionUtils.isEmpty(paramValue)) {
-            return Constant.EMPTY_STRING;
+            return CommonConstant.EMPTY_STRING;
         }
         return paramValue.get(0);
     }
@@ -170,7 +170,7 @@ public class BaseController {
 
     protected <T extends BaseRequest> T getRequestBodyFromContext(RoutingContext context, Gson gson, Class<T> clz) {
         context.request().uri();
-        val requestBody = context.body().asString(Constant.UTF_8_STANDARD_CHARSET);
+        val requestBody = context.body().asString(CommonConstant.UTF_8_STANDARD_CHARSET);
         val request = gson.fromJson(requestBody, clz);
         request.validate();
         return request;
@@ -178,10 +178,10 @@ public class BaseController {
 
     protected <T extends CommonResponse, B> void executeThreadBlock(RoutingContext context, RequestHandler<T, B> requestHandler, TypeToken<B> requestBodyClass) {
         val startingTime = (double) System.currentTimeMillis();
-        val trace = (String) context.get(Constant.TRACE_ID_MDC_KEY_NAME);
+        val trace = (String) context.get(CommonConstant.TRACE_ID_MDC_KEY_NAME);
 
         final Future<@Nullable CommonResponse> blockingFutureTask = vertx.executeBlocking(() -> {
-            MDC.put(Constant.TRACE_ID_MDC_KEY_NAME, trace);
+            MDC.put(CommonConstant.TRACE_ID_MDC_KEY_NAME, trace);
             final MultiMap requestHeader = context.request().headers();
 
             val headerLogMsg = new ArrayList<String>();
@@ -196,7 +196,7 @@ public class BaseController {
                 );
             }
 
-            val requestBody = context.body().asString(Constant.UTF_8_STANDARD_CHARSET);
+            val requestBody = context.body().asString(CommonConstant.UTF_8_STANDARD_CHARSET);
 
             BaseController.this.requestLogger.info(
                     "[{}] Request:\n    - URL: {}\n    - Header:\n{}\n    - Payload:\n        {}",
@@ -227,12 +227,12 @@ public class BaseController {
             response.setErrorDescription(ErrorCodeEnums.SUCCESS.getMessage());
             response.setHttpCode(200);
 
-            MDC.remove(Constant.TRACE_ID_MDC_KEY_NAME);
+            MDC.remove(CommonConstant.TRACE_ID_MDC_KEY_NAME);
 
             return response;
         }, false);
         blockingFutureTask.onSuccess(response -> {
-            MDC.put(Constant.TRACE_ID_MDC_KEY_NAME, trace);
+            MDC.put(CommonConstant.TRACE_ID_MDC_KEY_NAME, trace);
             val endingTime = (double) System.currentTimeMillis();
             val duration = (endingTime - startingTime) / 1000D;
             String responseBody = gson.toJson(response);
@@ -243,7 +243,7 @@ public class BaseController {
                             VertxBaseConstant.PROCESSED_TIME_HEADER_NAME,
                             DateTimeUtils.generateCurrentTimeDefault()
                                     .format(
-                                            DateTimeFormatter.ofPattern(Constant.DEFAULT_LOCAL_DATE_TIME_STRING_PATTERN)
+                                            DateTimeFormatter.ofPattern(CommonConstant.DEFAULT_LOCAL_DATE_TIME_STRING_PATTERN)
                                     )
                     )
                     .putHeader(VertxBaseConstant.TRACE_HEADER_NAME, trace)
@@ -254,10 +254,10 @@ public class BaseController {
                     duration,
                     responseBody
             );
-            MDC.remove(Constant.TRACE_ID_MDC_KEY_NAME);
+            MDC.remove(CommonConstant.TRACE_ID_MDC_KEY_NAME);
         });
         blockingFutureTask.onFailure(e -> {
-            MDC.put(Constant.TRACE_ID_MDC_KEY_NAME, trace);
+            MDC.put(CommonConstant.TRACE_ID_MDC_KEY_NAME, trace);
             val endingTime = (double) System.currentTimeMillis();
             val duration = (endingTime - startingTime) / 1000D;
             BaseController.this.exceptionLogger.error("[{}] - {}", trace, e.getMessage(), e);
@@ -287,7 +287,7 @@ public class BaseController {
                             VertxBaseConstant.PROCESSED_TIME_HEADER_NAME,
                             DateTimeUtils.generateCurrentTimeDefault()
                                     .format(
-                                            DateTimeFormatter.ofPattern(Constant.DEFAULT_LOCAL_DATE_TIME_STRING_PATTERN)
+                                            DateTimeFormatter.ofPattern(CommonConstant.DEFAULT_LOCAL_DATE_TIME_STRING_PATTERN)
                                     )
                     )
                     .putHeader(VertxBaseConstant.TRACE_HEADER_NAME, trace)
@@ -298,15 +298,15 @@ public class BaseController {
                     duration,
                     responseBody
             );
-            MDC.remove(Constant.TRACE_ID_MDC_KEY_NAME);
+            MDC.remove(CommonConstant.TRACE_ID_MDC_KEY_NAME);
         });
     }
 
     protected <T extends CommonResponse, B> void execute(RoutingContext context, RequestHandler<T, B> requestHandler, TypeToken<B> requestBodyClass) {
         val startingTime = (double) System.currentTimeMillis();
-        val trace = (String) context.get(Constant.TRACE_ID_MDC_KEY_NAME);
-        MDC.put(Constant.TRACE_ID_MDC_KEY_NAME, trace);
-        String responseBody = Constant.EMPTY_STRING;
+        val trace = (String) context.get(CommonConstant.TRACE_ID_MDC_KEY_NAME);
+        MDC.put(CommonConstant.TRACE_ID_MDC_KEY_NAME, trace);
+        String responseBody = CommonConstant.EMPTY_STRING;
         int httpStatusCode = 200;
         try {
             final MultiMap requestHeader = context.request().headers();
@@ -323,7 +323,7 @@ public class BaseController {
                 );
             }
 
-            val requestBody = context.body().asString(Constant.UTF_8_STANDARD_CHARSET);
+            val requestBody = context.body().asString(CommonConstant.UTF_8_STANDARD_CHARSET);
 
             LogUtils.writeLog(
                     LogUtils.Level.INFO,
@@ -357,7 +357,7 @@ public class BaseController {
                             VertxBaseConstant.PROCESSED_TIME_HEADER_NAME,
                             DateTimeUtils.generateCurrentTimeDefault()
                                     .format(
-                                            DateTimeFormatter.ofPattern(Constant.DEFAULT_LOCAL_DATE_TIME_STRING_PATTERN)
+                                            DateTimeFormatter.ofPattern(CommonConstant.DEFAULT_LOCAL_DATE_TIME_STRING_PATTERN)
                                     )
                     )
                     .putHeader(VertxBaseConstant.TRACE_HEADER_NAME, trace)
@@ -390,7 +390,7 @@ public class BaseController {
                             VertxBaseConstant.PROCESSED_TIME_HEADER_NAME,
                             DateTimeUtils.generateCurrentTimeDefault()
                                     .format(
-                                            DateTimeFormatter.ofPattern(Constant.DEFAULT_LOCAL_DATE_TIME_STRING_PATTERN)
+                                            DateTimeFormatter.ofPattern(CommonConstant.DEFAULT_LOCAL_DATE_TIME_STRING_PATTERN)
                                     )
                     )
                     .putHeader(VertxBaseConstant.TRACE_HEADER_NAME, trace)
@@ -416,7 +416,7 @@ public class BaseController {
                 );
             }
         }
-        MDC.remove(Constant.TRACE_ID_MDC_KEY_NAME);
+        MDC.remove(CommonConstant.TRACE_ID_MDC_KEY_NAME);
     }
 
     protected interface RequestHandler<T extends CommonResponse, B> {

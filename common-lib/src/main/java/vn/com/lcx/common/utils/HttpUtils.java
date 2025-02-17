@@ -12,7 +12,7 @@ import lombok.val;
 import lombok.var;
 import vn.com.lcx.common.config.BuildGson;
 import vn.com.lcx.common.config.BuildObjectMapper;
-import vn.com.lcx.common.constant.Constant;
+import vn.com.lcx.common.constant.CommonConstant;
 import vn.com.lcx.common.dto.Response;
 
 import javax.net.ssl.HostnameVerifier;
@@ -317,7 +317,7 @@ public class HttpUtils {
             return writer.toString();
         } catch (Exception e) {
             LogUtils.writeLog2(e.getMessage(), e);
-            return Constant.EMPTY_STRING;
+            return CommonConstant.EMPTY_STRING;
         }
     }
 

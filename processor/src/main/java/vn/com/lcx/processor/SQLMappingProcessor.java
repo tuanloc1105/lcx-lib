@@ -7,7 +7,7 @@ import vn.com.lcx.common.annotation.ExcludingField;
 import vn.com.lcx.common.annotation.IdColumn;
 import vn.com.lcx.common.annotation.SecondaryIdColumn;
 import vn.com.lcx.common.annotation.TableName;
-import vn.com.lcx.common.constant.Constant;
+import vn.com.lcx.common.constant.CommonConstant;
 import vn.com.lcx.common.database.utils.EntityUtils;
 import vn.com.lcx.common.utils.ExceptionUtils;
 
@@ -379,7 +379,7 @@ public class SQLMappingProcessor extends AbstractProcessor {
 
         public static String insertStatementBuilder(TypeElement typeElement, List<Element> classElements) {
 
-            String result = Constant.EMPTY_STRING;
+            String result = CommonConstant.EMPTY_STRING;
 
             TableName tableNameAnnotation = typeElement.getAnnotation(TableName.class);
 
@@ -403,9 +403,9 @@ public class SQLMappingProcessor extends AbstractProcessor {
 
             String insertStatement = "INSERT INTO\\n    " + tableName;
             ArrayList<String> columnList = new ArrayList<>();
-            String entityFieldGetCode = Constant.EMPTY_STRING;
+            String entityFieldGetCode = CommonConstant.EMPTY_STRING;
             ArrayList<String> putEntityFieldIntoMapCodeLines = new ArrayList<String>();
-            String idColumnFieldName = Constant.EMPTY_STRING;
+            String idColumnFieldName = CommonConstant.EMPTY_STRING;
             boolean idColumnIsNumber = false;
 
             for (Element classElement : classElements) {
@@ -479,7 +479,7 @@ public class SQLMappingProcessor extends AbstractProcessor {
 
         public static String updateStatementBuilder(TypeElement typeElement, List<Element> classElements) {
 
-            String result = Constant.EMPTY_STRING;
+            String result = CommonConstant.EMPTY_STRING;
 
             TableName tableNameAnnotation = typeElement.getAnnotation(TableName.class);
 
@@ -504,13 +504,13 @@ public class SQLMappingProcessor extends AbstractProcessor {
 
             String updateStatement = "UPDATE\\n    " + tableName + "\\nSET\\n    ";
             ArrayList<String> columnList = new ArrayList<String>();
-            String entityFieldGetCode = Constant.EMPTY_STRING;
+            String entityFieldGetCode = CommonConstant.EMPTY_STRING;
             ArrayList<String> entityFieldList = new ArrayList<String>();
 
             boolean idColumnIsNumber = false;
 
-            String idColumnColumnName = Constant.EMPTY_STRING;
-            String idColumnFieldName = Constant.EMPTY_STRING;
+            String idColumnColumnName = CommonConstant.EMPTY_STRING;
+            String idColumnFieldName = CommonConstant.EMPTY_STRING;
 
             for (Element classElement : classElements) {
                 ColumnName columnNameAnnotation = classElement.getAnnotation(ColumnName.class);
@@ -583,7 +583,7 @@ public class SQLMappingProcessor extends AbstractProcessor {
 
         public static String deleteStatementBuilder(TypeElement typeElement, List<Element> classElements) {
 
-            String result = Constant.EMPTY_STRING;
+            String result = CommonConstant.EMPTY_STRING;
 
             TableName tableNameAnnotation = typeElement.getAnnotation(TableName.class);
 
@@ -608,13 +608,13 @@ public class SQLMappingProcessor extends AbstractProcessor {
 
             String deleteStatement = "DELETE FROM\\n    " + tableName + "\\nWHERE\\n    ";
             ArrayList<String> columnList = new ArrayList<String>();
-            String entityFieldGetCode = Constant.EMPTY_STRING;
+            String entityFieldGetCode = CommonConstant.EMPTY_STRING;
             ArrayList<String> entityFieldList = new ArrayList<String>();
 
             boolean idColumnIsNumber = false;
 
-            String idColumnColumnName = Constant.EMPTY_STRING;
-            String idColumnFieldName = Constant.EMPTY_STRING;
+            String idColumnColumnName = CommonConstant.EMPTY_STRING;
+            String idColumnFieldName = CommonConstant.EMPTY_STRING;
 
             for (Element classElement : classElements) {
                 ColumnName columnNameAnnotation = classElement.getAnnotation(ColumnName.class);
@@ -677,7 +677,7 @@ public class SQLMappingProcessor extends AbstractProcessor {
 
         public static String selectStatementBuilder(TypeElement typeElement, List<Element> classElements) {
 
-            String result = Constant.EMPTY_STRING;
+            String result = CommonConstant.EMPTY_STRING;
 
             TableName tableNameAnnotation = typeElement.getAnnotation(TableName.class);
 

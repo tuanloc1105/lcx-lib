@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import vn.com.lcx.common.annotation.ColumnName;
 import vn.com.lcx.common.annotation.IdColumn;
 import vn.com.lcx.common.annotation.TableName;
-import vn.com.lcx.common.constant.Constant;
+import vn.com.lcx.common.constant.CommonConstant;
 import vn.com.lcx.common.utils.FileUtils;
 import vn.com.lcx.common.utils.MyStringUtils;
 
@@ -215,7 +215,7 @@ public final class DBEntityAnalysis {
                     MyStringUtils.formatStringSpace2(columnDefinitionLines, ",\n    "),
                     String.format(PRIMARY_KEY_TEMPLATE, idField.get().getAnnotation(ColumnName.class).name())
             );
-            String folderPath = FileUtils.pathJoining(Constant.ROOT_DIRECTORY_PROJECT_PATH, "data", "sql");
+            String folderPath = FileUtils.pathJoining(CommonConstant.ROOT_DIRECTORY_PROJECT_PATH, "data", "sql");
             createFolderIfNotExists(folderPath);
             writeContentToFile(
                     FileUtils.pathJoining(folderPath, tableName.value() + ".sql"),

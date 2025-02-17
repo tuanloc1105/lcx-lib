@@ -7,7 +7,7 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import vn.com.lcx.common.constant.Constant;
+import vn.com.lcx.common.constant.CommonConstant;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -28,7 +28,7 @@ public final class BuildGson {
                         (JsonDeserializer<LocalDateTime>) (json, type, jsonDeserializationContext) -> {
                             try {
                                 return LocalDateTime.parse(
-                                        json.getAsJsonPrimitive().getAsString(), DateTimeFormatter.ofPattern(Constant.DEFAULT_LOCAL_DATE_TIME_STRING_PATTERN)
+                                        json.getAsJsonPrimitive().getAsString(), DateTimeFormatter.ofPattern(CommonConstant.DEFAULT_LOCAL_DATE_TIME_STRING_PATTERN)
                                 );
                             } catch (Exception e) {
                                 log.error(e.getMessage(), e);
@@ -39,14 +39,14 @@ public final class BuildGson {
                 .registerTypeAdapter(
                         LocalDateTime.class,
                         (JsonSerializer<LocalDateTime>) (localDateTime, type, jsonSerializationContext) ->
-                                new JsonPrimitive(localDateTime.format(DateTimeFormatter.ofPattern(Constant.DEFAULT_LOCAL_DATE_TIME_STRING_PATTERN)))
+                                new JsonPrimitive(localDateTime.format(DateTimeFormatter.ofPattern(CommonConstant.DEFAULT_LOCAL_DATE_TIME_STRING_PATTERN)))
                 )
                 .registerTypeAdapter(
                         LocalDate.class,
                         (JsonDeserializer<LocalDate>) (json, type, jsonDeserializationContext) -> {
                             try {
                                 return LocalDate.parse(
-                                        json.getAsJsonPrimitive().getAsString(), DateTimeFormatter.ofPattern(Constant.DEFAULT_LOCAL_DATE_STRING_PATTERN)
+                                        json.getAsJsonPrimitive().getAsString(), DateTimeFormatter.ofPattern(CommonConstant.DEFAULT_LOCAL_DATE_STRING_PATTERN)
                                 );
                             } catch (Exception e) {
                                 log.error(e.getMessage(), e);
@@ -57,7 +57,7 @@ public final class BuildGson {
                 .registerTypeAdapter(
                         LocalDate.class,
                         (JsonSerializer<LocalDate>) (localDate, type, jsonSerializationContext) ->
-                                new JsonPrimitive(localDate.format(DateTimeFormatter.ofPattern(Constant.DEFAULT_LOCAL_DATE_STRING_PATTERN)))
+                                new JsonPrimitive(localDate.format(DateTimeFormatter.ofPattern(CommonConstant.DEFAULT_LOCAL_DATE_STRING_PATTERN)))
                 )
                 .create();
     }
@@ -70,7 +70,7 @@ public final class BuildGson {
                         (JsonDeserializer<LocalDateTime>) (json, type, jsonDeserializationContext) -> {
                             try {
                                 return LocalDateTime.parse(
-                                        json.getAsJsonPrimitive().getAsString(), DateTimeFormatter.ofPattern(Constant.DEFAULT_LOCAL_DATE_TIME_VIETNAMESE_STRING_PATTERN)
+                                        json.getAsJsonPrimitive().getAsString(), DateTimeFormatter.ofPattern(CommonConstant.DEFAULT_LOCAL_DATE_TIME_VIETNAMESE_STRING_PATTERN)
                                 );
                             } catch (Exception e) {
                                 log.error(e.getMessage(), e);
@@ -81,14 +81,14 @@ public final class BuildGson {
                 .registerTypeAdapter(
                         LocalDateTime.class,
                         (JsonSerializer<LocalDateTime>) (localDateTime, type, jsonSerializationContext) ->
-                                new JsonPrimitive(localDateTime.format(DateTimeFormatter.ofPattern(Constant.DEFAULT_LOCAL_DATE_TIME_VIETNAMESE_STRING_PATTERN)))
+                                new JsonPrimitive(localDateTime.format(DateTimeFormatter.ofPattern(CommonConstant.DEFAULT_LOCAL_DATE_TIME_VIETNAMESE_STRING_PATTERN)))
                 )
                 .registerTypeAdapter(
                         LocalDate.class,
                         (JsonDeserializer<LocalDate>) (json, type, jsonDeserializationContext) -> {
                             try {
                                 return LocalDate.parse(
-                                        json.getAsJsonPrimitive().getAsString(), DateTimeFormatter.ofPattern(Constant.DEFAULT_LOCAL_DATE_VIETNAMESE_STRING_PATTERN)
+                                        json.getAsJsonPrimitive().getAsString(), DateTimeFormatter.ofPattern(CommonConstant.DEFAULT_LOCAL_DATE_VIETNAMESE_STRING_PATTERN)
                                 );
                             } catch (Exception e) {
                                 log.error(e.getMessage(), e);
@@ -99,7 +99,7 @@ public final class BuildGson {
                 .registerTypeAdapter(
                         LocalDate.class,
                         (JsonSerializer<LocalDate>) (localDate, type, jsonSerializationContext) ->
-                                new JsonPrimitive(localDate.format(DateTimeFormatter.ofPattern(Constant.DEFAULT_LOCAL_DATE_VIETNAMESE_STRING_PATTERN)))
+                                new JsonPrimitive(localDate.format(DateTimeFormatter.ofPattern(CommonConstant.DEFAULT_LOCAL_DATE_VIETNAMESE_STRING_PATTERN)))
                 )
                 .create();
     }
@@ -112,7 +112,7 @@ public final class BuildGson {
                         (JsonDeserializer<LocalDateTime>) (json, type, jsonDeserializationContext) -> {
                             try {
                                 return LocalDateTime.parse(
-                                        json.getAsJsonPrimitive().getAsString(), DateTimeFormatter.ofPattern(Constant.DEFAULT_LOCAL_DATE_TIME_STRING_PATTERN)
+                                        json.getAsJsonPrimitive().getAsString(), DateTimeFormatter.ofPattern(CommonConstant.DEFAULT_LOCAL_DATE_TIME_STRING_PATTERN)
                                 );
                             } catch (Exception e) {
                                 log.error(e.getMessage(), e);
@@ -123,14 +123,14 @@ public final class BuildGson {
                 .registerTypeAdapter(
                         LocalDateTime.class,
                         (JsonSerializer<LocalDateTime>) (localDateTime, type, jsonSerializationContext) ->
-                                new JsonPrimitive(localDateTime.format(DateTimeFormatter.ofPattern(Constant.DEFAULT_LOCAL_DATE_TIME_STRING_PATTERN)))
+                                new JsonPrimitive(localDateTime.format(DateTimeFormatter.ofPattern(CommonConstant.DEFAULT_LOCAL_DATE_TIME_STRING_PATTERN)))
                 )
                 .registerTypeAdapter(
                         LocalDate.class,
                         (JsonDeserializer<LocalDate>) (json, type, jsonDeserializationContext) -> {
                             try {
                                 return LocalDate.parse(
-                                        json.getAsJsonPrimitive().getAsString(), DateTimeFormatter.ofPattern(Constant.DEFAULT_LOCAL_DATE_STRING_PATTERN)
+                                        json.getAsJsonPrimitive().getAsString(), DateTimeFormatter.ofPattern(CommonConstant.DEFAULT_LOCAL_DATE_STRING_PATTERN)
                                 );
                             } catch (Exception e) {
                                 log.error(e.getMessage(), e);
@@ -141,7 +141,7 @@ public final class BuildGson {
                 .registerTypeAdapter(
                         LocalDate.class,
                         (JsonSerializer<LocalDate>) (localDate, type, jsonSerializationContext) ->
-                                new JsonPrimitive(localDate.format(DateTimeFormatter.ofPattern(Constant.DEFAULT_LOCAL_DATE_STRING_PATTERN)))
+                                new JsonPrimitive(localDate.format(DateTimeFormatter.ofPattern(CommonConstant.DEFAULT_LOCAL_DATE_STRING_PATTERN)))
                 )
                 .setPrettyPrinting()
                 .create();

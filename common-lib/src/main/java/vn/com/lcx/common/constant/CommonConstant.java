@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public final class Constant {
+public final class CommonConstant {
 
     public static final String EMPTY_STRING = "";
     public static final String HYPHEN = "-";
@@ -58,6 +58,6 @@ public final class Constant {
     public final static ConcurrentHashMap<String, SelectStatementBuilder> BUILDER_MAP = new ConcurrentHashMap<>();
     public static LCXProperties applicationConfig;
 
-    private Constant() {
+    private CommonConstant() {
     }
 }

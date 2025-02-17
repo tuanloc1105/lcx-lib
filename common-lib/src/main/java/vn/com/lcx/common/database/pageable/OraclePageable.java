@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.val;
 import lombok.var;
 import org.apache.commons.lang3.StringUtils;
-import vn.com.lcx.common.constant.Constant;
+import vn.com.lcx.common.constant.CommonConstant;
 import vn.com.lcx.common.database.utils.EntityUtils;
 
 import java.util.ArrayList;
@@ -63,7 +63,7 @@ public class OraclePageable implements Pageable {
     public String toSql() {
         val listOfOrder = new ArrayList<String>();
         val orderClause = new StringBuilder();
-        var offSetClause = Constant.EMPTY_STRING;
+        var offSetClause = CommonConstant.EMPTY_STRING;
 
         if (this.pageNumber > 0 || this.pageSize > 0) {
             int offset = (pageNumber - 1) * pageSize;

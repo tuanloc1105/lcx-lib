@@ -1,6 +1,7 @@
 package vn.com.lcx.common.database.handler.resultset;
 
 import org.apache.commons.lang3.StringUtils;
+import vn.com.lcx.common.constant.CommonConstant;
 import vn.com.lcx.common.utils.LogUtils;
 
 import java.io.BufferedReader;
@@ -27,7 +28,7 @@ public final class SqlClobReader {
             }
         } catch (Throwable e) {
             LogUtils.writeLog(e.getMessage(), e);
-            return vn.com.lcx.common.constant.Constant.EMPTY_STRING;
+            return CommonConstant.EMPTY_STRING;
         }
         return clobString.toString();
     }

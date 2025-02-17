@@ -2,7 +2,7 @@ package vn.com.lcx.common.utils;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import vn.com.lcx.common.constant.Constant;
+import vn.com.lcx.common.constant.CommonConstant;
 
 import java.util.Properties;
 
@@ -18,7 +18,7 @@ public class LCXProperties {
         } else if (yamlProperties != null) {
             return yamlProperties.getProperty(key);
         }
-        return Constant.EMPTY_STRING;
+        return CommonConstant.EMPTY_STRING;
     }
 
 }

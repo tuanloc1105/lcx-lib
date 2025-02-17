@@ -3,7 +3,7 @@ package vn.com.lcx.common.mail;
 import lombok.val;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import vn.com.lcx.common.constant.Constant;
+import vn.com.lcx.common.constant.CommonConstant;
 import vn.com.lcx.common.utils.ExceptionUtils;
 import vn.com.lcx.common.utils.LogUtils;
 
@@ -131,7 +131,7 @@ public final class MailHelper {
 
                     message.setSentDate(new Date());
 
-                    message.setSubject(mailInfo.getSubject(), Constant.UTF_8_STANDARD_CHARSET);
+                    message.setSubject(mailInfo.getSubject(), CommonConstant.UTF_8_STANDARD_CHARSET);
 
                     val multipart = new MimeMultipart("related");
                     val mimeBodyPart = new MimeBodyPart();

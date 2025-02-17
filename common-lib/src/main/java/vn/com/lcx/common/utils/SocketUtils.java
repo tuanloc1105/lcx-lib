@@ -3,7 +3,7 @@ package vn.com.lcx.common.utils;
 import lombok.NoArgsConstructor;
 import lombok.var;
 import org.apache.commons.lang3.StringUtils;
-import vn.com.lcx.common.constant.Constant;
+import vn.com.lcx.common.constant.CommonConstant;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -16,7 +16,7 @@ import java.net.Socket;
 public class SocketUtils {
 
     public String sendAndReceive(String socketHost, int socketPort, String inputMessage) {
-        var result = Constant.EMPTY_STRING;
+        var result = CommonConstant.EMPTY_STRING;
         if (StringUtils.isBlank(socketHost)) {
             throw new NullPointerException("socketHost is blank");
         }

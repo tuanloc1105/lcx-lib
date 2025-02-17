@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.val;
 import lombok.var;
-import vn.com.lcx.common.constant.Constant;
+import vn.com.lcx.common.constant.CommonConstant;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
-import static vn.com.lcx.common.constant.Constant.EMPTY_STRING;
+import static vn.com.lcx.common.constant.CommonConstant.EMPTY_STRING;
 
 public final class FileUtils {
     private FileUtils() {
@@ -178,7 +178,7 @@ public final class FileUtils {
                 "" + ownerPermission.handlePermission() + groupPermission.handlePermission() + otherUserPermission.handlePermission(),
                 file.getAbsolutePath()
         );
-        ShellCommandRunningUtils.runWithProcessBuilder(changeFilePermissionCommand, Constant.ROOT_DIRECTORY_PROJECT_PATH);
+        ShellCommandRunningUtils.runWithProcessBuilder(changeFilePermissionCommand, CommonConstant.ROOT_DIRECTORY_PROJECT_PATH);
     }
 
     /**

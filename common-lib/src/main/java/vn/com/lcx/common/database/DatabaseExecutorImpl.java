@@ -3,7 +3,7 @@ package vn.com.lcx.common.database;
 import lombok.val;
 import lombok.var;
 import oracle.jdbc.OraclePreparedStatement;
-import vn.com.lcx.common.constant.Constant;
+import vn.com.lcx.common.constant.CommonConstant;
 import vn.com.lcx.common.database.handler.statement.SqlStatementHandler;
 import vn.com.lcx.common.database.type.DBTypeEnum;
 import vn.com.lcx.common.database.type.OracleTypeEnum;
@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static vn.com.lcx.common.constant.Constant.DATA_TYPE_AND_SQL_STATEMENT_METHOD_MAP;
+import static vn.com.lcx.common.constant.CommonConstant.DATA_TYPE_AND_SQL_STATEMENT_METHOD_MAP;
 
 public class DatabaseExecutorImpl implements DatabaseExecutor {
 
@@ -52,7 +52,7 @@ public class DatabaseExecutorImpl implements DatabaseExecutor {
             }
             // finalQueryString = MyStringUtils.minifyString(finalQueryString);
             statement = connection.prepareStatement(finalQueryString);
-            LogUtils.writeLog2(LogUtils.Level.INFO, "\n" + finalQueryString.replaceAll("^\\n+|\\n+$", vn.com.lcx.common.constant.Constant.EMPTY_STRING));
+            LogUtils.writeLog2(LogUtils.Level.INFO, "\n" + finalQueryString.replaceAll("^\\n+|\\n+$", CommonConstant.EMPTY_STRING));
             var parameterIsNotNullAndNotEmpty = parameter != null && !parameter.isEmpty();
             if (parameterIsNotNullAndNotEmpty) {
                 StringBuilder parametersLog = new StringBuilder("parameters:");
@@ -155,7 +155,7 @@ public class DatabaseExecutorImpl implements DatabaseExecutor {
                     parameterString
             );
             statement = connection.prepareCall(sqlCallingSPStatement);
-            LogUtils.writeLog2(LogUtils.Level.INFO, "\n" + sqlCallingSPStatement.replaceAll("^\\n+|\\n+$", vn.com.lcx.common.constant.Constant.EMPTY_STRING));
+            LogUtils.writeLog2(LogUtils.Level.INFO, "\n" + sqlCallingSPStatement.replaceAll("^\\n+|\\n+$", CommonConstant.EMPTY_STRING));
             var inParameterIsNotNullAndNotEmpty = inParameters != null && !inParameters.isEmpty();
             if (inParameterIsNotNullAndNotEmpty) {
                 StringBuilder parametersLog = new StringBuilder("input parameters:");
@@ -265,7 +265,7 @@ public class DatabaseExecutorImpl implements DatabaseExecutor {
                     parameterString
             );
             statement = connection.prepareCall(sqlCallingSPStatement);
-            LogUtils.writeLog2(LogUtils.Level.INFO, "\n" + sqlCallingSPStatement.replaceAll("^\\n+|\\n+$", vn.com.lcx.common.constant.Constant.EMPTY_STRING));
+            LogUtils.writeLog2(LogUtils.Level.INFO, "\n" + sqlCallingSPStatement.replaceAll("^\\n+|\\n+$", CommonConstant.EMPTY_STRING));
             for (Map<Integer, Object> inParameters : inParameterMaps) {
                 var inParameterIsNotNullAndNotEmpty = inParameters != null && !inParameters.isEmpty();
                 if (inParameterIsNotNullAndNotEmpty) {
@@ -367,7 +367,7 @@ public class DatabaseExecutorImpl implements DatabaseExecutor {
         try {
             // sqlString = MyStringUtils.minifyString(sqlString);
             statement = connection.prepareStatement(sqlString);
-            LogUtils.writeLog2(LogUtils.Level.INFO, "\n" + sqlString.replaceAll("^\\n+|\\n+$", vn.com.lcx.common.constant.Constant.EMPTY_STRING));
+            LogUtils.writeLog2(LogUtils.Level.INFO, "\n" + sqlString.replaceAll("^\\n+|\\n+$", CommonConstant.EMPTY_STRING));
             var parameterIsNotNullAndNotEmpty = parameter != null && !parameter.isEmpty();
             if (parameterIsNotNullAndNotEmpty) {
                 StringBuilder parametersLog = new StringBuilder("parameters:");
@@ -444,7 +444,7 @@ public class DatabaseExecutorImpl implements DatabaseExecutor {
         BigDecimal id = BigDecimal.ZERO;
         try {
             statement = connection.prepareStatement(sqlString);
-            LogUtils.writeLog2(LogUtils.Level.INFO, "\n" + sqlString.replaceAll("^\\n+|\\n+$", vn.com.lcx.common.constant.Constant.EMPTY_STRING));
+            LogUtils.writeLog2(LogUtils.Level.INFO, "\n" + sqlString.replaceAll("^\\n+|\\n+$", CommonConstant.EMPTY_STRING));
             var parameterIsNotNullAndNotEmpty = parameter != null && !parameter.isEmpty();
             if (parameterIsNotNullAndNotEmpty) {
                 StringBuilder parametersLog = new StringBuilder("parameters:");
@@ -531,7 +531,7 @@ public class DatabaseExecutorImpl implements DatabaseExecutor {
         PreparedStatement statement = null;
         try {
             statement = connection.prepareStatement(sqlString);
-            LogUtils.writeLog2(LogUtils.Level.INFO, "\n" + sqlString.replaceAll("^\\n+|\\n+$", Constant.EMPTY_STRING));
+            LogUtils.writeLog2(LogUtils.Level.INFO, "\n" + sqlString.replaceAll("^\\n+|\\n+$", CommonConstant.EMPTY_STRING));
             val parameterMapListIsNotNullAndNotEmpty = parameterMapList != null && !parameterMapList.isEmpty();
             if (parameterMapListIsNotNullAndNotEmpty) {
                 for (Map<Integer, Object> parameter : parameterMapList) {

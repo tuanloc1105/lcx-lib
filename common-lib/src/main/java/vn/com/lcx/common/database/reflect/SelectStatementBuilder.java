@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import vn.com.lcx.common.annotation.ColumnName;
 import vn.com.lcx.common.annotation.SubTable;
 import vn.com.lcx.common.annotation.TableName;
-import vn.com.lcx.common.constant.Constant;
+import vn.com.lcx.common.constant.CommonConstant;
 import vn.com.lcx.common.constant.JavaSqlResultSetConstant;
 import vn.com.lcx.common.database.pageable.Direction;
 import vn.com.lcx.common.database.pageable.Pageable;
@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static vn.com.lcx.common.constant.Constant.BUILDER_MAP;
+import static vn.com.lcx.common.constant.CommonConstant.BUILDER_MAP;
 import static vn.com.lcx.common.database.utils.EntityUtils.getTableShortenedName;
 import static vn.com.lcx.common.utils.MyStringUtils.removeSuffixOfString;
 
@@ -249,7 +249,7 @@ public class SelectStatementBuilder {
                     )
             );
         }
-        return result.isEmpty() ? Constant.EMPTY_STRING : "\n    " + String.join("\n    ", result);
+        return result.isEmpty() ? CommonConstant.EMPTY_STRING : "\n    " + String.join("\n    ", result);
     }
 
     @SuppressWarnings("SequencedCollectionMethodCanBeUsed")

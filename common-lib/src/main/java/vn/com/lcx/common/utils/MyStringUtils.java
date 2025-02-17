@@ -6,7 +6,7 @@ import com.google.gson.reflect.TypeToken;
 import lombok.val;
 import lombok.var;
 import org.apache.commons.lang3.StringUtils;
-import vn.com.lcx.common.constant.Constant;
+import vn.com.lcx.common.constant.CommonConstant;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -80,16 +80,16 @@ public final class MyStringUtils {
             throw new IllegalArgumentException(input.trim() + " is not a valid JSON string");
         }
         if (StringUtils.isBlank(input)) {
-            return Constant.EMPTY_STRING;
+            return CommonConstant.EMPTY_STRING;
         }
         if (input.length() > 1000) {
             return input.substring(0, 50) + "..." + input.substring(input.length() - 50);
         }
         return input
                 .replace("\n", " ")
-                .replace("\r", vn.com.lcx.common.constant.Constant.EMPTY_STRING)
-                .replace("\t", vn.com.lcx.common.constant.Constant.EMPTY_STRING)
-                .replace("    ", vn.com.lcx.common.constant.Constant.EMPTY_STRING)
+                .replace("\r", CommonConstant.EMPTY_STRING)
+                .replace("\t", CommonConstant.EMPTY_STRING)
+                .replace("    ", CommonConstant.EMPTY_STRING)
                 .replace("\": \"", "\":\"")
                 .replace("\", \"", "\",\"")
                 .replace("{ ", "{")
@@ -105,7 +105,7 @@ public final class MyStringUtils {
 
     public static String minifyString(String inputString) {
         if (StringUtils.isBlank(inputString)) {
-            return Constant.EMPTY_STRING;
+            return CommonConstant.EMPTY_STRING;
         }
         // Step 1: Trim the string and replace spaces/new lines
         String minified = inputString.trim() // Removes leading and trailing whitespaces
@@ -139,7 +139,7 @@ public final class MyStringUtils {
         try {
             return URLEncoder.encode(value, "UTF-8");
         } catch (Exception e) {
-            return Constant.EMPTY_STRING;
+            return CommonConstant.EMPTY_STRING;
         }
     }
 
@@ -147,13 +147,13 @@ public final class MyStringUtils {
         try {
             return URLDecoder.decode(value, "UTF-8");
         } catch (Exception e) {
-            return Constant.EMPTY_STRING;
+            return CommonConstant.EMPTY_STRING;
         }
     }
 
     public static String getLastChars(String input, int lengthLimitation) {
         if (input == null || lengthLimitation == 0) {
-            return Constant.EMPTY_STRING;
+            return CommonConstant.EMPTY_STRING;
         }
         if (input.length() > lengthLimitation) {
             return input.substring(input.length() - lengthLimitation);
@@ -183,7 +183,7 @@ public final class MyStringUtils {
 
     public static String getCenteredText(String text, int consoleWidth) {
         if (StringUtils.isBlank(text) || consoleWidth == 0) {
-            return Constant.EMPTY_STRING;
+            return CommonConstant.EMPTY_STRING;
         }
         // Calculate the padding needed to center the text
         int padding = (consoleWidth - text.length()) / 2;
@@ -194,7 +194,7 @@ public final class MyStringUtils {
 
     public static String alignLeftText(String text, int consoleWidth) {
         if (StringUtils.isBlank(text) || consoleWidth == 0) {
-            return Constant.EMPTY_STRING;
+            return CommonConstant.EMPTY_STRING;
         }
         // Calculate the padding needed to center the text
         int padding = (consoleWidth - text.length()) / 2;
@@ -205,7 +205,7 @@ public final class MyStringUtils {
 
     public static String alignRightText(String text, int consoleWidth) {
         if (StringUtils.isBlank(text) || consoleWidth == 0) {
-            return Constant.EMPTY_STRING;
+            return CommonConstant.EMPTY_STRING;
         }
         // Calculate the padding needed to center the text
         int padding = (consoleWidth - text.length()) / 2;
@@ -218,7 +218,7 @@ public final class MyStringUtils {
                                            ParagraphMode mode,
                                            String... linesOfString) {
         if (linesOfString == null || linesOfString.length == 0) {
-            return Constant.EMPTY_STRING;
+            return CommonConstant.EMPTY_STRING;
         }
         int consoleWidth;
         if (logWithConsoleWidthIsTheLongestLine) {
@@ -349,7 +349,7 @@ public final class MyStringUtils {
             return sw.toString();
         } catch (Exception e) {
             LogUtils.writeLog(e.getMessage(), e);
-            return Constant.EMPTY_STRING;
+            return CommonConstant.EMPTY_STRING;
         }
     }
 
