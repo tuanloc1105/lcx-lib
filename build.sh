@@ -25,6 +25,6 @@ mvn \
  install \
  -DskipTests=true \
  -Dfile.encoding=UTF8 \
- -T 4 \
+ # -T 4 \
  -f \
  pom.xml

@@ -63,6 +63,7 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
                     HashSet<Element> fieldsOfClass = this.getAllFields(typeElement);
                     entitiesClassMap.put(fullClassName, fieldsOfClass);
                 } catch (Exception e) {
+                    e.printStackTrace();
                     this.processingEnv.
                             getMessager().
                             printMessage(
@@ -107,7 +108,7 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
         String fullClassName = packageName + "." + className;
         JavaFileObject builderFile = this.processingEnv.getFiler().createSourceFile(fullClassName);
 
-        if (!this.extendsInterface(typeElement, "vn.com.hdbank.common.database.repository.LCXRepository")) {
+        if (!this.extendsInterface(typeElement, "vn.com.lcx.common.database.repository.LCXRepository")) {
             return;
         }
 
@@ -131,12 +132,12 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
             writer.write("import java.sql.Statement;\n");
             writer.write("import java.util.*;\n\n");
             writer.write("public class " + className + " implements " + typeElement.getSimpleName() + " {\n\n");
-            writer.write("    private vn.com.hdbank.common.database.DatabaseExecutor executor;\n\n");
+            writer.write("    private vn.com.lcx.common.database.DatabaseExecutor executor;\n\n");
             writer.write("    private static " + className + " instance;\n\n");
-            writer.write("    public " + className + "(vn.com.hdbank.common.database.DatabaseExecutor executor) {\n");
+            writer.write("    public " + className + "(vn.com.lcx.common.database.DatabaseExecutor executor) {\n");
             writer.write("        this.executor = executor;\n");
             writer.write("    }\n\n");
-            writer.write("    public static " + className + " getInstance(vn.com.hdbank.common.database.DatabaseExecutor executor) {\n");
+            writer.write("    public static " + className + " getInstance(vn.com.lcx.common.database.DatabaseExecutor executor) {\n");
             writer.write("        if (instance == null) {\n");
             writer.write("            instance = new " + className + "(executor);" + "\n");
             writer.write("        }\n");
@@ -260,7 +261,7 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
                 }
             }
             // get generic type of interface
-            TypeElement baseRepositoryElement = elementUtils.getTypeElement("vn.com.hdbank.common.database.repository.LCXRepository");
+            TypeElement baseRepositoryElement = elementUtils.getTypeElement("vn.com.lcx.common.database.repository.LCXRepository");
             TypeMirror baseRepositoryType = baseRepositoryElement.asType();
             TypeMirror mirror = clazz.asType();
             List<? extends TypeMirror> mirrors = typeUtils.directSupertypes(mirror);
@@ -334,10 +335,10 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
                 final String returnDatatype;
                 boolean firstParameterIsNotConnectionType = !(this.typeUtils.isAssignable(
                         methodInfo.getInputParameters().get(0).asType(),
-                        elementUtils.getTypeElement("vn.com.hdbank.common.database.pool.entry.ConnectionEntry").asType()
+                        elementUtils.getTypeElement("vn.com.lcx.common.database.pool.entry.ConnectionEntry").asType()
                 ));
                 if (firstParameterIsNotConnectionType) {
-                    throw new RuntimeException("Invalid method, first parameter is not vn.com.hdbank.common.database.pool.entry.ConnectionEntry");
+                    throw new RuntimeException("Invalid method, first parameter is not vn.com.lcx.common.database.pool.entry.ConnectionEntry");
                 }
                 if (methodInfo.getOutputParameter() instanceof DeclaredType) {
                     DeclaredType declaredType = (DeclaredType) methodInfo.getOutputParameter();
@@ -359,7 +360,7 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
                     returnDatatype = methodInfo.getOutputParameter() + Constant.EMPTY_STRING;
                 }
                 final List<String> asd = methodInfo.getInputParameters().stream()
-                        .filter(e -> !"vn.com.hdbank.common.database.pool.entry.ConnectionEntry".equals(e.asType().toString()))
+                        .filter(e -> !"vn.com.lcx.common.database.pool.entry.ConnectionEntry".equals(e.asType().toString()))
                         .map(
                                 e ->
                                         String.format(
@@ -369,7 +370,7 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
                         )
                         .collect(Collectors.toList());
                 String sqlStatement = String.format(
-                        "vn.com.hdbank.common.database.reflect.SelectStatementBuilder.of(%s.class).build(\"%s\"%s);",
+                        "vn.com.lcx.common.database.reflect.SelectStatementBuilder.of(%s.class).build(\"%s\"%s);",
                         this.genericEntityClass.getQualifiedName(),
                         methodInfo.getMethodName(),
                         asd.isEmpty() ? "" : ", " + asd.stream().collect(Collectors.joining(", "))
@@ -426,7 +427,7 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
                         if (
                                 this.typeUtils.isAssignable(
                                         methodInfo.getInputParameters().get(i).asType(),
-                                        elementUtils.getTypeElement("vn.com.hdbank.common.database.pageable.Pageable").asType()
+                                        elementUtils.getTypeElement("vn.com.lcx.common.database.pageable.Pageable").asType()
                                 )
                         ) {
                             havePageableParameter = true;
@@ -502,10 +503,10 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
                     String returnCodeLine;
                     boolean isReturnPage = false;
 
-                    if (returnClass.contains("vn.com.hdbank.common.database.pageable.Page")) {
+                    if (returnClass.contains("vn.com.lcx.common.database.pageable.Page")) {
                         isReturnPage = true;
                         returnCodeLine = String.format(
-                                "return vn.com.hdbank.common.database.pageable.Page.<%s>create(\n" +
+                                "return vn.com.lcx.common.database.pageable.Page.<%s>create(\n" +
                                         "            sqlResult,\n" +
                                         "            count,\n" +
                                         "            %s.getPageNumber(),\n" +
@@ -561,7 +562,7 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
                                     String.format(
                                             "java.util.List<Integer> countResult = executor.executeQuery(\n" +
                                                     "                connection.getConnection(),\n" +
-                                                    "                vn.com.hdbank.common.database.reflect.SelectStatementBuilder.of(%s.class).build(\"%s\"%s),\n" +
+                                                    "                vn.com.lcx.common.database.reflect.SelectStatementBuilder.of(%s.class).build(\"%s\"%s),\n" +
                                                     "                null,\n" +
                                                     "                resultSet -> {\n" +
                                                     "                    try {\n" +
@@ -621,7 +622,7 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
             String save = String.format(
                     "\n" +
                             "    @Override\n" +
-                            "    public int save(vn.com.hdbank.common.database.pool.entry.ConnectionEntry connection, %1$s entity) {\n" +
+                            "    public int save(vn.com.lcx.common.database.pool.entry.ConnectionEntry connection, %1$s entity) {\n" +
                             "        String sql = %1$sBuilder.insertSql();\n" +
                             "        int rowAffected = executor.executeMutation(\n" +
                             "                connection.getConnection(),\n" +
@@ -635,7 +636,7 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
             String update = String.format(
                     "\n" +
                             "    @Override\n" +
-                            "    public int update(vn.com.hdbank.common.database.pool.entry.ConnectionEntry connection, %1$s entity) {\n" +
+                            "    public int update(vn.com.lcx.common.database.pool.entry.ConnectionEntry connection, %1$s entity) {\n" +
                             "        String sql = %1$sBuilder.updateSql();\n" +
                             "        int rowAffected = executor.executeMutation(\n" +
                             "                connection.getConnection(),\n" +
@@ -649,7 +650,7 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
             String delete = String.format(
                     "\n" +
                             "    @Override\n" +
-                            "    public int delete(vn.com.hdbank.common.database.pool.entry.ConnectionEntry connection, %1$s entity) {\n" +
+                            "    public int delete(vn.com.lcx.common.database.pool.entry.ConnectionEntry connection, %1$s entity) {\n" +
                             "        String sql = %1$sBuilder.deleteSql();\n" +
                             "        int rowAffected = executor.executeMutation(\n" +
                             "                connection.getConnection(),\n" +
@@ -670,7 +671,7 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
 
             if (classFields == null) {
                 code = String.format(
-                        "\n    // classFields is null\n    public void save2(vn.com.hdbank.common.database.pool.entry.ConnectionEntry connection, %s entity) {\n        save(connection, entity);\n    }\n",
+                        "\n    // classFields is null\n    public void save2(vn.com.lcx.common.database.pool.entry.ConnectionEntry connection, %s entity) {\n        save(connection, entity);\n    }\n",
                         genericEntityClass.getQualifiedName().toString()
                 );
                 return code;
@@ -703,15 +704,15 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
             if (dataTypeSimpleName.equals("Long")) {
                 code = String.format(
                         "\n" +
-                                "    public void save2(vn.com.hdbank.common.database.pool.entry.ConnectionEntry connection, %1$s entity) {\n" +
+                                "    public void save2(vn.com.lcx.common.database.pool.entry.ConnectionEntry connection, %1$s entity) {\n" +
                                 "        try {\n" +
                                 "            String sql = %1$sBuilder.insertSql();\n" +
                                 "\n" +
-                                "            vn.com.hdbank.common.database.type.DBTypeEnum dbTypeEnum = connection.getDbType();\n" +
+                                "            vn.com.lcx.common.database.type.DBTypeEnum dbTypeEnum = connection.getDbType();\n" +
                                 "\n" +
                                 "            Long id = 0L;\n" +
                                 "\n" +
-                                "            if (dbTypeEnum.equals(vn.com.hdbank.common.database.type.DBTypeEnum.MSSQL) || dbTypeEnum.equals(vn.com.hdbank.common.database.type.DBTypeEnum.MYSQL)) {\n" +
+                                "            if (dbTypeEnum.equals(vn.com.lcx.common.database.type.DBTypeEnum.MSSQL) || dbTypeEnum.equals(vn.com.lcx.common.database.type.DBTypeEnum.MYSQL)) {\n" +
                                 "                int rowAffected = executor.executeMutation(\n" +
                                 "                        connection.getConnection(),\n" +
                                 "                        sql,\n" +
@@ -721,8 +722,8 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
                                 "                    throw new RuntimeException(\"Can not insert\");\n" +
                                 "                }\n" +
                                 "                try (Statement stmt = connection.getConnection().createStatement()) {\n" +
-                                "                    // final String getLatestIdStatement = dbTypeEnum.equals(vn.com.hdbank.common.database.type.DBTypeEnum.MSSQL) ? \"SELECT SCOPE_IDENTITY()\" : \"SELECT LAST_INSERT_ID()\";\n" +
-                                "                    final String getLatestIdStatement = dbTypeEnum.equals(vn.com.hdbank.common.database.type.DBTypeEnum.MSSQL) ? \"SELECT @@IDENTITY\" : \"SELECT LAST_INSERT_ID()\";\n" +
+                                "                    // final String getLatestIdStatement = dbTypeEnum.equals(vn.com.lcx.common.database.type.DBTypeEnum.MSSQL) ? \"SELECT SCOPE_IDENTITY()\" : \"SELECT LAST_INSERT_ID()\";\n" +
+                                "                    final String getLatestIdStatement = dbTypeEnum.equals(vn.com.lcx.common.database.type.DBTypeEnum.MSSQL) ? \"SELECT @@IDENTITY\" : \"SELECT LAST_INSERT_ID()\";\n" +
                                 "                    try (ResultSet rs = stmt.executeQuery(getLatestIdStatement)) {\n" +
                                 "                        if (rs.next()) {\n" +
                                 "                            id = rs.getLong(1);\n" +
@@ -734,7 +735,7 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
                                 "            } else {\n" +
                                 "                BigDecimal newId = executor.executeInsertReturnId(\n" +
                                 "                        connection.getConnection(),\n" +
-                                "                        dbTypeEnum.equals(vn.com.hdbank.common.database.type.DBTypeEnum.ORACLE) ? sql + \" RETURNING %3$s INTO ?\" : sql + \" RETURNING %3$s\",\n" +
+                                "                        dbTypeEnum.equals(vn.com.lcx.common.database.type.DBTypeEnum.ORACLE) ? sql + \" RETURNING %3$s INTO ?\" : sql + \" RETURNING %3$s\",\n" +
                                 "                        %1$sBuilder.insertMapInputParameter(entity),\n" +
                                 "                        dbTypeEnum\n" +
                                 "                );\n" +
@@ -752,15 +753,15 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
             } else if (dataTypeSimpleName.equals("BigDecimal")) {
                 code = String.format(
                         "\n" +
-                                "    public void save2(vn.com.hdbank.common.database.pool.entry.ConnectionEntry connection, %1$s entity) {\n" +
+                                "    public void save2(vn.com.lcx.common.database.pool.entry.ConnectionEntry connection, %1$s entity) {\n" +
                                 "        try {\n" +
                                 "            String sql = %1$sBuilder.insertSql();\n" +
                                 "\n" +
-                                "            vn.com.hdbank.common.database.type.DBTypeEnum dbTypeEnum = connection.getDbType();\n" +
+                                "            vn.com.lcx.common.database.type.DBTypeEnum dbTypeEnum = connection.getDbType();\n" +
                                 "\n" +
                                 "            BigDecimal id = BigDecimal.ZERO;\n" +
                                 "\n" +
-                                "            if (dbTypeEnum.equals(vn.com.hdbank.common.database.type.DBTypeEnum.MSSQL) || dbTypeEnum.equals(vn.com.hdbank.common.database.type.DBTypeEnum.MYSQL)) {\n" +
+                                "            if (dbTypeEnum.equals(vn.com.lcx.common.database.type.DBTypeEnum.MSSQL) || dbTypeEnum.equals(vn.com.lcx.common.database.type.DBTypeEnum.MYSQL)) {\n" +
                                 "                int rowAffected = executor.executeMutation(\n" +
                                 "                        connection.getConnection(),\n" +
                                 "                        sql,\n" +
@@ -770,8 +771,8 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
                                 "                    throw new RuntimeException(\"Can not insert\");\n" +
                                 "                }\n" +
                                 "                try (Statement stmt = connection.getConnection().createStatement()) {\n" +
-                                "                    // final String getLatestIdStatement = dbTypeEnum.equals(vn.com.hdbank.common.database.type.DBTypeEnum.MSSQL) ? \"SELECT SCOPE_IDENTITY()\" : \"SELECT LAST_INSERT_ID()\";\n" +
-                                "                    final String getLatestIdStatement = dbTypeEnum.equals(vn.com.hdbank.common.database.type.DBTypeEnum.MSSQL) ? \"SELECT @@IDENTITY\" : \"SELECT LAST_INSERT_ID()\";\n" +
+                                "                    // final String getLatestIdStatement = dbTypeEnum.equals(vn.com.lcx.common.database.type.DBTypeEnum.MSSQL) ? \"SELECT SCOPE_IDENTITY()\" : \"SELECT LAST_INSERT_ID()\";\n" +
+                                "                    final String getLatestIdStatement = dbTypeEnum.equals(vn.com.lcx.common.database.type.DBTypeEnum.MSSQL) ? \"SELECT @@IDENTITY\" : \"SELECT LAST_INSERT_ID()\";\n" +
                                 "                    try (ResultSet rs = stmt.executeQuery(getLatestIdStatement)) {\n" +
                                 "                        if (rs.next()) {\n" +
                                 "                            id = rs.getBigDecimal(1);\n" +
@@ -783,7 +784,7 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
                                 "            } else {\n" +
                                 "                id = executor.executeInsertReturnId(\n" +
                                 "                        connection.getConnection(),\n" +
-                                "                        dbTypeEnum.equals(vn.com.hdbank.common.database.type.DBTypeEnum.ORACLE) ? sql + \" RETURNING %3$s INTO ?\" : sql + \" RETURNING %3$s\"," +
+                                "                        dbTypeEnum.equals(vn.com.lcx.common.database.type.DBTypeEnum.ORACLE) ? sql + \" RETURNING %3$s INTO ?\" : sql + \" RETURNING %3$s\"," +
                                 "                        %1$sBuilder.insertMapInputParameter(entity),\n" +
                                 "                        dbTypeEnum\n" +
                                 "                );\n" +
@@ -799,7 +800,7 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
                 );
             } else {
                 code = String.format(
-                        "\n    public void save2(vn.com.hdbank.common.database.pool.entry.ConnectionEntry connection, %s entity) {\n        save(connection, entity);\n    }\n",
+                        "\n    public void save2(vn.com.lcx.common.database.pool.entry.ConnectionEntry connection, %s entity) {\n        save(connection, entity);\n    }\n",
                         genericEntityClass.getQualifiedName().toString()
                 );
             }
@@ -811,7 +812,7 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
             String save = String.format(
                     "\n" +
                             "    @Override\n" +
-                            "    public Map<String, Integer> save(vn.com.hdbank.common.database.pool.entry.ConnectionEntry connection, List<%1$s> entities) {\n" +
+                            "    public Map<String, Integer> save(vn.com.lcx.common.database.pool.entry.ConnectionEntry connection, List<%1$s> entities) {\n" +
                             "        String sql = %1$sBuilder.insertSql();\n" +
                             "        Map<String, Integer> batchExecutationResult = executor.executeMutationBatch(\n" +
                             "                connection.getConnection(),\n" +
@@ -831,7 +832,7 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
             String update = String.format(
                     "\n" +
                             "    @Override\n" +
-                            "    public Map<String, Integer> update(vn.com.hdbank.common.database.pool.entry.ConnectionEntry connection, List<%1$s> entities) {\n" +
+                            "    public Map<String, Integer> update(vn.com.lcx.common.database.pool.entry.ConnectionEntry connection, List<%1$s> entities) {\n" +
                             "        String sql = %1$sBuilder.updateSql();\n" +
                             "        Map<String, Integer> batchExecutationResult = executor.executeMutationBatch(\n" +
                             "                connection.getConnection(),\n" +
@@ -851,7 +852,7 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
             String delete = String.format(
                     "\n" +
                             "    @Override\n" +
-                            "    public Map<String, Integer> delete(vn.com.hdbank.common.database.pool.entry.ConnectionEntry connection, List<%1$s> entities) {\n" +
+                            "    public Map<String, Integer> delete(vn.com.lcx.common.database.pool.entry.ConnectionEntry connection, List<%1$s> entities) {\n" +
                             "        String sql = %1$sBuilder.deleteSql();\n" +
                             "        Map<String, Integer> batchExecutationResult = executor.executeMutationBatch(\n" +
                             "                connection.getConnection(),\n" +
@@ -883,10 +884,10 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
                 for (MethodInfo methodInfo : listOfMethodsHaveQueryAnnotation) {
                     boolean firstParameterIsNotConnectionType = !(this.typeUtils.isAssignable(
                             methodInfo.getInputParameters().get(0).asType(),
-                            elementUtils.getTypeElement("vn.com.hdbank.common.database.pool.entry.ConnectionEntry").asType()
+                            elementUtils.getTypeElement("vn.com.lcx.common.database.pool.entry.ConnectionEntry").asType()
                     ));
                     if (firstParameterIsNotConnectionType) {
-                        throw new RuntimeException("Invalid method, first parameter is not vn.com.hdbank.common.database.pool.entry.ConnectionEntry");
+                        throw new RuntimeException("Invalid method, first parameter is not vn.com.lcx.common.database.pool.entry.ConnectionEntry");
                     }
 
                     final String currentMethodOutputString = methodInfo.getOutputParameter().toString();
@@ -909,12 +910,12 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
                         if (
                                 this.typeUtils.isAssignable(
                                         currentInputParameter.asType(),
-                                        elementUtils.getTypeElement("vn.com.hdbank.common.database.pageable.Pageable").asType()
+                                        elementUtils.getTypeElement("vn.com.lcx.common.database.pageable.Pageable").asType()
                                 )
                         ) {
                             continue;
                         }
-                        if (currentInputParameter.asType().toString().contains("vn.com.hdbank.common.database.ResultSetHandler")) {
+                        if (currentInputParameter.asType().toString().contains("vn.com.lcx.common.database.ResultSetHandler")) {
                             continue;
                         }
                         final boolean currentInputParameterIsList = methodInfo.getInputParameters().get(i).asType().toString().contains("List<");
@@ -971,7 +972,7 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
                         if (
                                 this.typeUtils.isAssignable(
                                         lastInputParameter.asType(),
-                                        elementUtils.getTypeElement("vn.com.hdbank.common.database.pageable.Pageable").asType()
+                                        elementUtils.getTypeElement("vn.com.lcx.common.database.pageable.Pageable").asType()
                                 )
                         ) {
                             pageableCode = String.format("+ \" \" + %s.toSql()", lastInputParameter.getSimpleName().toString());
@@ -980,13 +981,13 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
                         if (
                                 this.typeUtils.isAssignable(
                                         secondLastInputParameter.asType(),
-                                        elementUtils.getTypeElement("vn.com.hdbank.common.database.pageable.Pageable").asType()
+                                        elementUtils.getTypeElement("vn.com.lcx.common.database.pageable.Pageable").asType()
                                 )
                         ) {
                             pageableCode = String.format("+ \" \" + %s.toSql()", secondLastInputParameter.getSimpleName().toString());
                         }
                         if (
-                                lastInputParameter.asType().toString().contains("vn.com.hdbank.common.database.ResultSetHandler")
+                                lastInputParameter.asType().toString().contains("vn.com.lcx.common.database.ResultSetHandler")
                         ) {
                             databaseExecutionCode = String.format(
                                     "executor.executeQuery(\n" +
