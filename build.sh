@@ -14,19 +14,17 @@ printf "\n\n >> Checking maven version \n\n\n"
 
 mvn --version
 
-mvn clean install -DskipTests=true -Dfile.encoding=UTF8 -T 4
-
-#mvn
-# -Dmaven.wagon.http.ssl.insecure=true \
-# -Dmaven.wagon.http.ssl.allowall=true \
-# -Dmaven.wagon.http.ssl.ignore.validity.dates=true \
-# -Dmaven.resolver.transport=wagon \
-# dependency:resolve \
-# dependency:sources \
-# clean \
-# install \
-# -DskipTests=true \
-# -Dfile.encoding=UTF8 \
-# -T 4 \
-# -f \
-# pom.xml
+mvn \
+ -Dmaven.wagon.http.ssl.insecure=true \
+ -Dmaven.wagon.http.ssl.allowall=true \
+ -Dmaven.wagon.http.ssl.ignore.validity.dates=true \
+ -Dmaven.resolver.transport=wagon \
+ dependency:resolve \
+ dependency:sources \
+ clean \
+ install \
+ -DskipTests=true \
+ -Dfile.encoding=UTF8 \
+ -T 4 \
+ -f \
+ pom.xml
