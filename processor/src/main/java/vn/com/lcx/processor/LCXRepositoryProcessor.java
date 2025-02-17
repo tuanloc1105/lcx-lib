@@ -130,7 +130,8 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
             writer.write("import java.sql.ResultSet;\n");
             writer.write("import java.sql.SQLException;\n");
             writer.write("import java.sql.Statement;\n");
-            writer.write("import java.util.*;\n\n");
+            writer.write("import java.util.*;\n");
+            writer.write("import java.util.stream.Collectors;\n\n");
             writer.write("public class " + className + " implements " + typeElement.getSimpleName() + " {\n\n");
             writer.write("    private vn.com.lcx.common.database.DatabaseExecutor executor;\n\n");
             writer.write("    private static " + className + " instance;\n\n");
@@ -817,7 +818,7 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
                             "        Map<String, Integer> batchExecutationResult = executor.executeMutationBatch(\n" +
                             "                connection.getConnection(),\n" +
                             "                sql,\n" +
-                            "                entities.stream().map(entity -> %1$sBuilder.insertMapInputParameter(entity)).toList()\n" +
+                            "                entities.stream().map(entity -> %1$sBuilder.insertMapInputParameter(entity)).collect(Collectors.toList())\n" +
                             "        );\n" +
                             "        if (batchExecutationResult == null) {\n" +
                             "            throw new RuntimeException(\"Datasource exception\");\n" +
@@ -837,7 +838,7 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
                             "        Map<String, Integer> batchExecutationResult = executor.executeMutationBatch(\n" +
                             "                connection.getConnection(),\n" +
                             "                sql,\n" +
-                            "                entities.stream().map(entity -> %1$sBuilder.updateMapInputParameter(entity)).toList()\n" +
+                            "                entities.stream().map(entity -> %1$sBuilder.updateMapInputParameter(entity)).collect(Collectors.toList())\n" +
                             "        );\n" +
                             "        if (batchExecutationResult == null) {\n" +
                             "            throw new RuntimeException(\"Datasource exception\");\n" +
@@ -857,7 +858,7 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
                             "        Map<String, Integer> batchExecutationResult = executor.executeMutationBatch(\n" +
                             "                connection.getConnection(),\n" +
                             "                sql,\n" +
-                            "                entities.stream().map(entity -> %1$sBuilder.deleteMapInputParameter(entity)).toList()\n" +
+                            "                entities.stream().map(entity -> %1$sBuilder.deleteMapInputParameter(entity)).collect(Collectors.toList())\n" +
                             "        );\n" +
                             "        if (batchExecutationResult == null) {\n" +
                             "            throw new RuntimeException(\"Datasource exception\");\n" +
