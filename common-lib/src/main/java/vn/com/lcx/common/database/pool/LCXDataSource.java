@@ -1,0 +1,280 @@
+package vn.com.lcx.common.database.pool;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.val;
+import lombok.var;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.LoggerFactory;
+import vn.com.lcx.common.database.DatabaseProperty;
+import vn.com.lcx.common.database.pool.entry.ConnectionEntry;
+import vn.com.lcx.common.database.type.DBTypeEnum;
+import vn.com.lcx.common.thread.RejectMode;
+import vn.com.lcx.common.thread.SimpleExecutor;
+import vn.com.lcx.common.utils.DateTimeUtils;
+import vn.com.lcx.common.utils.LogUtils;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.TimeUnit;
+
+import static vn.com.lcx.common.utils.RandomUtils.generateRandomString;
+
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class LCXDataSource {
+
+    private final String poolName;
+    private final String defaultDriverClassName;
+    private final String showDbVersionSqlStatement;
+    private final DatabaseProperty property;
+    private final SimpleExecutor<Boolean> myExecutor;
+    private final DBTypeEnum dbType;
+    @Getter(AccessLevel.PRIVATE)
+    private final CopyOnWriteArrayList<ConnectionEntry> pool;
+
+    private final transient Object lock = new Object();
+
+    private static Connection createConnection(String url, String user, String password, int maxTimeoutSecond) throws SQLException, ClassNotFoundException {
+        DriverManager.setLoginTimeout(maxTimeoutSecond);
+        return DriverManager.getConnection(url, user, password);
+    }
+
+    public static LCXDataSource init(String databaseHost,
+                                     int databasePort,
+                                     String username,
+                                     String password,
+                                     String databaseName,
+                                     String driverClassName,
+                                     int initialPoolSize,
+                                     int maxPoolSize,
+                                     int maxTimeout,
+                                     DBTypeEnum dbType) {
+        try {
+            final String connectionString = String.format(dbType.getTemplateUrlConnectionString(), databaseHost, databasePort, databaseName);
+            DatabaseProperty property = new DatabaseProperty(
+                    connectionString,
+                    username,
+                    password,
+                    driverClassName,
+                    initialPoolSize,
+                    maxPoolSize,
+                    maxTimeout,
+                    true,
+                    true
+            );
+            if (property.propertiesIsAllSet()) {
+                val simpleExecutor = SimpleExecutor.<Boolean>init(
+                        initialPoolSize,
+                        initialPoolSize,
+                        RejectMode.ABORT_POLICY,
+                        maxTimeout,
+                        TimeUnit.SECONDS
+                );
+                val lcxPool = new LCXDataSource(
+                        databaseName,
+                        property.getDriverClassName(),
+                        dbType.getShowDbVersionSqlStatement(),
+                        property,
+                        simpleExecutor,
+                        dbType,
+                        new CopyOnWriteArrayList<>()
+                );
+                lcxPool.create(
+                        property.getConnectionString(),
+                        property.getUsername(),
+                        property.getPassword(),
+                        property.getDriverClassName(),
+                        maxTimeout
+                );
+                Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                    LoggerFactory.getLogger(databaseName).info("Shutting down pool");
+                    for (ConnectionEntry entry : lcxPool.getPool()) {
+                        //noinspection ResultOfMethodCallIgnored
+                        entry.getFile().delete();
+                        try {
+                            if (entry.transactionIsOpen()) {
+                                entry.commit();
+                            }
+                            entry.shutdown();
+                        } catch (Exception e) {
+                            entry.getConnectionLog().error("Error closing connection {}", entry, e);
+                        }
+                    }
+                }));
+                return lcxPool;
+            }
+            throw new RuntimeException("Database properties is not all set");
+        } catch (Exception e) {
+            LogUtils.writeLog2(e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void create(String url, String user, String password, String driverClassName, int maxTimeoutSecond) throws SQLException, ClassNotFoundException {
+        if (StringUtils.isBlank(driverClassName)) {
+            LogUtils.writeLog2(LogUtils.Level.INFO, "Driver class name is not provided, using default {}", defaultDriverClassName);
+            Class.forName(defaultDriverClassName);
+        } else {
+            LogUtils.writeLog2(LogUtils.Level.INFO, "Using driver class name {}", driverClassName);
+            Class.forName(driverClassName);
+        }
+        LogUtils.writeLog2(LogUtils.Level.INFO, "Creating new connection at url {}", url);
+        List<ConnectionEntry> pool = new ArrayList<>(this.property.getInitialPoolSize());
+        for (int i = 0; i < this.property.getInitialPoolSize(); i++) {
+            this.myExecutor.addNewTask(
+                    () -> {
+                        Thread.currentThread().setName(Thread.currentThread().getName().replace("pool", "lcx"));
+                        val entry = ConnectionEntry.init(
+                                createConnection(url, user, password, maxTimeoutSecond),
+                                this.dbType,
+                                String.format("%s-%s", this.dbType.name().toLowerCase(), generateRandomString(8))
+                        );
+                        return pool.add(entry);
+                    }
+            );
+        }
+        this.myExecutor.executeTasks();
+        this.pool.addAll(pool);
+    }
+
+    public ConnectionEntry getConnection() {
+        LogUtils.writeLog2(
+                LogUtils.Level.INFO,
+                String.format(
+                        "Pool status:\n    - Total connections:   %d\n    - Active connections:  %d\n    - Idle connections:    %d",
+                        this.getTotalConnections(),
+                        this.getActiveConnections(),
+                        this.getIdleConnections()
+                )
+        );
+        try {
+            for (ConnectionEntry connectionEntry : this.pool) {
+                if (!connectionEntry.isActive() && !connectionEntry.isCriticalLock()) {
+                    connectionEntry.activate();
+                    if (connectionEntry.isValid()) {
+                        connectionEntry.getConnectionLog().info("Connection is valid");
+                        return connectionEntry;
+                    }
+                    connectionEntry.setConnection(
+                            createConnection(
+                                    this.property.getConnectionString(),
+                                    this.property.getUsername(),
+                                    this.property.getPassword(),
+                                    this.property.getMaxTimeout()
+                            )
+                    );
+                    connectionEntry.getConnectionLog().info("Recreating connection");
+                    return connectionEntry;
+                }
+            }
+            synchronized (lock) {
+                if (this.pool.size() < this.property.getMaxPoolSize()) {
+                    val entry = ConnectionEntry.init(
+                            createConnection(
+                                    this.property.getConnectionString(),
+                                    this.property.getUsername(),
+                                    this.property.getPassword(),
+                                    this.property.getMaxTimeout()
+                            ),
+                            this.dbType,
+                            String.format("%s-%s", this.dbType.name().toLowerCase(), generateRandomString(8))
+                    );
+                    this.pool.add(entry);
+                    entry.activate();
+                    return entry;
+                }
+                val currentTime = DateTimeUtils.generateCurrentTimeDefault();
+                val entry = this.pool.stream()
+                        .sorted(Comparator.comparing(ConnectionEntry::getLastActiveTime))
+                        .filter(e -> {
+                            val durationBetweenLastTimeActiveAndCurrentTime = Duration.between(e.getLastActiveTime(), currentTime);
+                            return durationBetweenLastTimeActiveAndCurrentTime.compareTo(Duration.of(30, ChronoUnit.SECONDS)) >= 0 && !e.isCriticalLock();
+                        })
+                        .findFirst()
+                        .orElseThrow(() -> new RuntimeException("All connection in pool is busy"));
+                entry.commit();
+                entry.shutdown();
+                entry.setConnection(
+                        createConnection(
+                                this.property.getConnectionString(),
+                                this.property.getUsername(),
+                                this.property.getPassword(),
+                                this.property.getMaxTimeout()
+                        )
+                );
+                entry.deactivate();
+                entry.activate();
+                return entry;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String showDBVersion() {
+        var databaseVersion = "0";
+        try (
+                Connection connection = createConnection(
+                        this.property.getConnectionString(),
+                        this.property.getUsername(),
+                        this.property.getPassword(),
+                        this.property.getMaxTimeout()
+                );
+                PreparedStatement statement = connection.prepareStatement(this.showDbVersionSqlStatement);
+                ResultSet resultSet = statement.executeQuery()
+        ) {
+            while (resultSet.next()) {
+                databaseVersion = resultSet.getString(1);
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            LogUtils.writeLog2(e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+        return databaseVersion;
+    }
+
+    public int getTotalConnections() {
+        return this.pool.size();
+    }
+
+    public int getActiveConnections() {
+        return (int) this.pool.stream().filter(con -> !con.isIdle()).count();
+    }
+
+    public int getIdleConnections() {
+        return (int) this.pool.stream().filter(ConnectionEntry::isIdle).count();
+    }
+
+    public void validateEntry(final ConnectionEntry entry) {
+        if (this.pool.stream().anyMatch(con -> con.getConnectionName().equals(entry.getConnectionName()))) {
+            try {
+                if (entry.isValid()) {
+                    return;
+                }
+                val newConnection = createConnection(
+                        this.property.getConnectionString(),
+                        this.property.getUsername(),
+                        this.property.getPassword(),
+                        this.property.getMaxTimeout()
+                );
+                entry.setConnection(newConnection);
+                return;
+            } catch (SQLException | ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        throw new IllegalArgumentException("Invalid connection: " + entry.getConnectionName());
+    }
+
+}
