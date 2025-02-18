@@ -135,8 +135,8 @@ public final class ConnectionEntry implements AutoCloseable {
 
     public void activate() {
         if (this.isIdle()) {
-            this.lastActiveTime = DateTimeUtils.generateCurrentTimeDefault();
             this.lock();
+            this.lastActiveTime = DateTimeUtils.generateCurrentTimeDefault();
             this.setIdle(false);
             this.getConnectionLog().info("Activated connection entry: {}", this);
             return;
@@ -149,11 +149,11 @@ public final class ConnectionEntry implements AutoCloseable {
             throw new RuntimeException("Connection is idling");
         }
         this.lastActiveTime = DateTimeUtils.generateCurrentTimeDefault();
-        this.releaseLock();
         if (transactionIsOpen()) {
             this.commit();
         }
         this.setIdle(true);
+        this.releaseLock();
         this.getConnectionLog().info("Deactivated connection entry: {}", this);
     }
 
