@@ -26,7 +26,10 @@ public final class CommonConstant {
     public static final String NULL_STRING = "null";
     public static final String DEFAULT_LOCAL_DATE_TIME_VIETNAMESE_STRING_PATTERN = "dd-MM-yyyy HH:mm:ss.SSS";
     public static final String DEFAULT_LOCAL_DATE_VIETNAMESE_STRING_PATTERN = "dd-MM-yyyy";
-    public static final String LOCAL_DATE_TIME_STRING_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSSX";
+    public static final String LOCAL_DATE_TIME_STRING_PATTERN_1 = "yyyy-MM-dd'T'HH:mm:ss";
+    public static final String LOCAL_DATE_TIME_STRING_PATTERN_2 = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+    public static final String LOCAL_DATE_TIME_STRING_PATTERN_3 = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSSX";
+    public static final String LOCAL_DATE_TIME_STRING_PATTERN_4 = "yyyy-MM-dd'T'HH:mm:ss.SSSX";
     public static final String DEFAULT_LOCAL_DATE_TIME_STRING_PATTERN = "yyyy-MM-dd HH:mm:ss.SSS";
     public static final String DEFAULT_LOCAL_DATE_STRING_PATTERN = "yyyy-MM-dd";
     public static final String CALLING_PYTHON_CODE_COMMAND_LINE = "python %s.py %s";

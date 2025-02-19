@@ -31,21 +31,42 @@ public final class BuildGson {
                                         json.getAsJsonPrimitive().getAsString(), DateTimeFormatter.ofPattern(CommonConstant.DEFAULT_LOCAL_DATE_TIME_STRING_PATTERN)
                                 );
                             } catch (Exception e) {
-                                log.error(e.getMessage(), e);
+                                // log.error(e.getMessage(), e);
                             }
                             try {
                                 return LocalDateTime.parse(
                                         json.getAsJsonPrimitive().getAsString(), DateTimeFormatter.ofPattern(CommonConstant.DEFAULT_LOCAL_DATE_TIME_VIETNAMESE_STRING_PATTERN)
                                 );
                             } catch (Exception e) {
-                                log.error(e.getMessage(), e);
+                                // log.error(e.getMessage(), e);
                             }
                             try {
                                 return LocalDateTime.parse(
-                                        json.getAsJsonPrimitive().getAsString(), DateTimeFormatter.ofPattern(CommonConstant.LOCAL_DATE_TIME_STRING_PATTERN)
+                                        json.getAsJsonPrimitive().getAsString(), DateTimeFormatter.ofPattern(CommonConstant.LOCAL_DATE_TIME_STRING_PATTERN_1)
                                 );
                             } catch (Exception e) {
-                                log.error(e.getMessage(), e);
+                                // log.error(e.getMessage(), e);
+                            }
+                            try {
+                                return LocalDateTime.parse(
+                                        json.getAsJsonPrimitive().getAsString(), DateTimeFormatter.ofPattern(CommonConstant.LOCAL_DATE_TIME_STRING_PATTERN_2)
+                                );
+                            } catch (Exception e) {
+                                // log.error(e.getMessage(), e);
+                            }
+                            try {
+                                return LocalDateTime.parse(
+                                        json.getAsJsonPrimitive().getAsString(), DateTimeFormatter.ofPattern(CommonConstant.LOCAL_DATE_TIME_STRING_PATTERN_3)
+                                );
+                            } catch (Exception e) {
+                                // log.error(e.getMessage(), e);
+                            }
+                            try {
+                                return LocalDateTime.parse(
+                                        json.getAsJsonPrimitive().getAsString(), DateTimeFormatter.ofPattern(CommonConstant.LOCAL_DATE_TIME_STRING_PATTERN_4)
+                                );
+                            } catch (Exception e) {
+                                // log.error(e.getMessage(), e);
                             }
                             return null;
                         }
@@ -63,14 +84,14 @@ public final class BuildGson {
                                         json.getAsJsonPrimitive().getAsString(), DateTimeFormatter.ofPattern(CommonConstant.DEFAULT_LOCAL_DATE_STRING_PATTERN)
                                 );
                             } catch (Exception e) {
-                                log.error(e.getMessage(), e);
+                                // log.error(e.getMessage(), e);
                             }
                             try {
                                 return LocalDate.parse(
                                         json.getAsJsonPrimitive().getAsString(), DateTimeFormatter.ofPattern(CommonConstant.DEFAULT_LOCAL_DATE_VIETNAMESE_STRING_PATTERN)
                                 );
                             } catch (Exception e) {
-                                log.error(e.getMessage(), e);
+                                // log.error(e.getMessage(), e);
                             }
                             return null;
                         }
@@ -103,9 +124,9 @@ public final class BuildGson {
                                         json.getAsJsonPrimitive().getAsString(), DateTimeFormatter.ofPattern(CommonConstant.DEFAULT_LOCAL_DATE_TIME_VIETNAMESE_STRING_PATTERN)
                                 );
                             } catch (Exception e) {
-                                log.error(e.getMessage(), e);
-                                return null;
+                                // log.error(e.getMessage(), e);
                             }
+                            return null;
                         }
                 )
                 .registerTypeAdapter(
@@ -121,9 +142,9 @@ public final class BuildGson {
                                         json.getAsJsonPrimitive().getAsString(), DateTimeFormatter.ofPattern(CommonConstant.DEFAULT_LOCAL_DATE_VIETNAMESE_STRING_PATTERN)
                                 );
                             } catch (Exception e) {
-                                log.error(e.getMessage(), e);
-                                return null;
+                                // log.error(e.getMessage(), e);
                             }
+                            return null;
                         }
                 )
                 .registerTypeAdapter(
