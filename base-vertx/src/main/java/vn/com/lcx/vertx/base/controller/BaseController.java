@@ -18,6 +18,7 @@ import vn.com.lcx.common.config.BuildGson;
 import vn.com.lcx.common.constant.CommonConstant;
 import vn.com.lcx.common.utils.DateTimeUtils;
 import vn.com.lcx.common.utils.LogUtils;
+import vn.com.lcx.common.utils.MyStringUtils;
 import vn.com.lcx.vertx.base.constant.VertxBaseConstant;
 import vn.com.lcx.vertx.base.enums.ErrorCodeEnums;
 import vn.com.lcx.vertx.base.exception.InternalServiceException;
@@ -196,7 +197,7 @@ public class BaseController {
                 );
             }
 
-            val requestBody = context.body().asString(CommonConstant.UTF_8_STANDARD_CHARSET);
+            val requestBody = MyStringUtils.minifyString(context.body().asString(CommonConstant.UTF_8_STANDARD_CHARSET));
 
             BaseController.this.requestLogger.info(
                     "[{}] Request:\n    - URL: {}\n    - Header:\n{}\n    - Payload:\n        {}",
@@ -323,7 +324,7 @@ public class BaseController {
                 );
             }
 
-            val requestBody = context.body().asString(CommonConstant.UTF_8_STANDARD_CHARSET);
+            val requestBody = MyStringUtils.minifyString(context.body().asString(CommonConstant.UTF_8_STANDARD_CHARSET));
 
             LogUtils.writeLog(
                     LogUtils.Level.INFO,
@@ -340,7 +341,6 @@ public class BaseController {
                 if (StringUtils.isBlank(requestBody)) {
                     throw new InternalServiceException(ErrorCodeEnums.INVALID_REQUEST, "Empty request body");
                 }
-                LogUtils.writeLog(LogUtils.Level.INFO, requestBody);
                 response = requestHandler.handle(context, gson.fromJson(requestBody, requestBodyClass.getType()));
             }
 

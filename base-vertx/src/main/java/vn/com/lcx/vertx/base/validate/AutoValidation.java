@@ -64,20 +64,27 @@ public final class AutoValidation {
                 }
 
                 if (field.getType().isAssignableFrom(String.class) && Optional.ofNullable(valuesPattern).isPresent()) {
+                    if (!Optional.ofNullable(fieldValue).isPresent()) {
+                        throw new InternalServiceException(
+                                ErrorCodeEnums.INVALID_REQUEST,
+                                String.format(
+                                        "%s's value must not null",
+                                        fieldName
+                                )
+                        );
+                    }
                     List<String> patterns = Arrays.asList(valuesPattern.value());
-                    for (String pattern : patterns) {
-                        if (Optional.ofNullable(fieldValue).isPresent() && !fieldValue.equals(pattern)) {
-                            throw new InternalServiceException(
-                                    ErrorCodeEnums.INVALID_REQUEST,
-                                    String.format(
-                                            "%s's value must be like one of these: %s",
-                                            fieldName,
-                                            patterns.stream().collect(
-                                                    Collectors.joining(", ", "[", "]")
-                                            )
-                                    )
-                            );
-                        }
+                    if (!patterns.contains(fieldValue.toString())) {
+                        throw new InternalServiceException(
+                                ErrorCodeEnums.INVALID_REQUEST,
+                                String.format(
+                                        "%s's value must be like one of these: %s",
+                                        fieldName,
+                                        patterns.stream().collect(
+                                                Collectors.joining(", ", "[", "]")
+                                        )
+                                )
+                        );
                     }
                 }
 
