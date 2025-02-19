@@ -20,7 +20,7 @@ public final class BuildGson {
     private BuildGson() {
     }
 
-    public static Gson getGson() {
+    public static GsonBuilder getGsonBuilder() {
         return new GsonBuilder()
                 // .serializeNulls()
                 .registerTypeAdapter(
@@ -32,8 +32,22 @@ public final class BuildGson {
                                 );
                             } catch (Exception e) {
                                 log.error(e.getMessage(), e);
-                                return null;
                             }
+                            try {
+                                return LocalDateTime.parse(
+                                        json.getAsJsonPrimitive().getAsString(), DateTimeFormatter.ofPattern(CommonConstant.DEFAULT_LOCAL_DATE_TIME_VIETNAMESE_STRING_PATTERN)
+                                );
+                            } catch (Exception e) {
+                                log.error(e.getMessage(), e);
+                            }
+                            try {
+                                return LocalDateTime.parse(
+                                        json.getAsJsonPrimitive().getAsString(), DateTimeFormatter.ofPattern(CommonConstant.LOCAL_DATE_TIME_STRING_PATTERN)
+                                );
+                            } catch (Exception e) {
+                                log.error(e.getMessage(), e);
+                            }
+                            return null;
                         }
                 )
                 .registerTypeAdapter(
@@ -50,15 +64,31 @@ public final class BuildGson {
                                 );
                             } catch (Exception e) {
                                 log.error(e.getMessage(), e);
-                                return null;
                             }
+                            try {
+                                return LocalDate.parse(
+                                        json.getAsJsonPrimitive().getAsString(), DateTimeFormatter.ofPattern(CommonConstant.DEFAULT_LOCAL_DATE_VIETNAMESE_STRING_PATTERN)
+                                );
+                            } catch (Exception e) {
+                                log.error(e.getMessage(), e);
+                            }
+                            return null;
                         }
                 )
                 .registerTypeAdapter(
                         LocalDate.class,
                         (JsonSerializer<LocalDate>) (localDate, type, jsonSerializationContext) ->
                                 new JsonPrimitive(localDate.format(DateTimeFormatter.ofPattern(CommonConstant.DEFAULT_LOCAL_DATE_STRING_PATTERN)))
-                )
+                );
+    }
+
+    public static Gson getGson() {
+        return getGsonBuilder().create();
+    }
+
+    public static Gson getGsonPrettyPrint() {
+        return getGsonBuilder()
+                .setPrettyPrinting()
                 .create();
     }
 
@@ -101,49 +131,6 @@ public final class BuildGson {
                         (JsonSerializer<LocalDate>) (localDate, type, jsonSerializationContext) ->
                                 new JsonPrimitive(localDate.format(DateTimeFormatter.ofPattern(CommonConstant.DEFAULT_LOCAL_DATE_VIETNAMESE_STRING_PATTERN)))
                 )
-                .create();
-    }
-
-    public static Gson getGsonPrettyPrint() {
-        return new GsonBuilder()
-                // .serializeNulls()
-                .registerTypeAdapter(
-                        LocalDateTime.class,
-                        (JsonDeserializer<LocalDateTime>) (json, type, jsonDeserializationContext) -> {
-                            try {
-                                return LocalDateTime.parse(
-                                        json.getAsJsonPrimitive().getAsString(), DateTimeFormatter.ofPattern(CommonConstant.DEFAULT_LOCAL_DATE_TIME_STRING_PATTERN)
-                                );
-                            } catch (Exception e) {
-                                log.error(e.getMessage(), e);
-                                return null;
-                            }
-                        }
-                )
-                .registerTypeAdapter(
-                        LocalDateTime.class,
-                        (JsonSerializer<LocalDateTime>) (localDateTime, type, jsonSerializationContext) ->
-                                new JsonPrimitive(localDateTime.format(DateTimeFormatter.ofPattern(CommonConstant.DEFAULT_LOCAL_DATE_TIME_STRING_PATTERN)))
-                )
-                .registerTypeAdapter(
-                        LocalDate.class,
-                        (JsonDeserializer<LocalDate>) (json, type, jsonDeserializationContext) -> {
-                            try {
-                                return LocalDate.parse(
-                                        json.getAsJsonPrimitive().getAsString(), DateTimeFormatter.ofPattern(CommonConstant.DEFAULT_LOCAL_DATE_STRING_PATTERN)
-                                );
-                            } catch (Exception e) {
-                                log.error(e.getMessage(), e);
-                                return null;
-                            }
-                        }
-                )
-                .registerTypeAdapter(
-                        LocalDate.class,
-                        (JsonSerializer<LocalDate>) (localDate, type, jsonSerializationContext) ->
-                                new JsonPrimitive(localDate.format(DateTimeFormatter.ofPattern(CommonConstant.DEFAULT_LOCAL_DATE_STRING_PATTERN)))
-                )
-                .setPrettyPrinting()
                 .create();
     }
 
