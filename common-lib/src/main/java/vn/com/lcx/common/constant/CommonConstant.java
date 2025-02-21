@@ -1,5 +1,6 @@
 package vn.com.lcx.common.constant;
 
+import com.google.gson.reflect.TypeToken;
 import vn.com.lcx.common.database.handler.statement.BigDecimalHandler;
 import vn.com.lcx.common.database.handler.statement.BooleanHandler;
 import vn.com.lcx.common.database.handler.statement.DateHandler;
@@ -16,6 +17,7 @@ import vn.com.lcx.common.utils.LCXProperties;
 
 import java.nio.file.FileSystems;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -32,10 +34,9 @@ public final class CommonConstant {
     public static final String LOCAL_DATE_TIME_STRING_PATTERN_4 = "yyyy-MM-dd'T'HH:mm:ss.SSSX";
     public static final String DEFAULT_LOCAL_DATE_TIME_STRING_PATTERN = "yyyy-MM-dd HH:mm:ss.SSS";
     public static final String DEFAULT_LOCAL_DATE_STRING_PATTERN = "yyyy-MM-dd";
-    public static final String CALLING_PYTHON_CODE_COMMAND_LINE = "python %s.py %s";
     public static final String UTF_8_STANDARD_CHARSET = "UTF-8";
-    // public static final String DEFAULT_LOCAL_DATE_TIME_STRING_PATTERN_ALL_UNDERSCORE = "dd_MM_yyyy_HH_mm_ss_SSS";
-    public static final String DEFAULT_LOCAL_DATE_TIME_STRING_PATTERN_NO_MILLISECOND_ALL_UNDERSCORE = "dd_MM_yyyy_HH_mm_ss";
+    public static final TypeToken<LinkedHashMap<String, Object>> HASH_MAP_GSON_TYPE_TOKEN = new TypeToken<LinkedHashMap<String, Object>>() {
+    };
     public static final Map<String, SqlStatementHandler> DATA_TYPE_AND_SQL_STATEMENT_METHOD_MAP = new HashMap<String, SqlStatementHandler>() {
         private static final long serialVersionUID = 7280484430132716574L;
 

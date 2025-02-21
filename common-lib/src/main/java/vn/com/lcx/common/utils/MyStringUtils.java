@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,26 +30,20 @@ public final class MyStringUtils {
     }
 
     public static String addNewFieldToJsonString(final Gson gson, final String inputJsonString, final String fieldName, final Object fieldValue) {
-        val type = new TypeToken<HashMap<String, Object>>() {
-        };
-        final HashMap<String, Object> jsonMap = gson.fromJson(inputJsonString, type.getType());
+        final LinkedHashMap<String, Object> jsonMap = gson.fromJson(inputJsonString, CommonConstant.HASH_MAP_GSON_TYPE_TOKEN.getType());
         jsonMap.put(fieldName, fieldValue);
         return gson.toJson(jsonMap);
     }
 
     public static String removeFieldValueFromJsonString(final Gson gson, final String inputJsonString, final String fieldName) {
-        val type = new TypeToken<HashMap<String, Object>>() {
-        };
-        final HashMap<String, Object> jsonMap = gson.fromJson(inputJsonString, type.getType());
+        final LinkedHashMap<String, Object> jsonMap = gson.fromJson(inputJsonString, CommonConstant.HASH_MAP_GSON_TYPE_TOKEN.getType());
         jsonMap.remove(fieldName);
         return gson.toJson(jsonMap);
     }
 
     public static <T> List<T> getFieldValueOfJsonString(final Gson gson, final String inputJsonString, final String fieldName, final Class<T> fieldDataType) {
         val result = new ArrayList<T>();
-        val type = new TypeToken<HashMap<String, Object>>() {
-        };
-        final HashMap<String, Object> jsonMap = gson.fromJson(inputJsonString, type.getType());
+        final LinkedHashMap<String, Object> jsonMap = gson.fromJson(inputJsonString, CommonConstant.HASH_MAP_GSON_TYPE_TOKEN.getType());
         for (Map.Entry<String, Object> header : jsonMap.entrySet()) {
             Object value = header.getValue();
             if (fieldName.equals(header.getKey())) {
