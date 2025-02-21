@@ -20,7 +20,6 @@ mvn \
  -Dmaven.wagon.http.ssl.ignore.validity.dates=true \
  -Dmaven.resolver.transport=wagon \
  dependency:resolve \
- dependency:sources \
  clean \
  install \
  -DskipTests=true \

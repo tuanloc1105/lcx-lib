@@ -197,7 +197,7 @@ public class BaseController {
                 );
             }
 
-            val requestBody = MyStringUtils.minifyString(context.body().asString(CommonConstant.UTF_8_STANDARD_CHARSET));
+            val requestBody = MyStringUtils.minifyJsonString(context.body().asString(CommonConstant.UTF_8_STANDARD_CHARSET));
 
             BaseController.this.requestLogger.info(
                     "[{}] Request:\n    - URL: {}\n    - Header:\n{}\n    - Payload:\n        {}",
@@ -324,7 +324,7 @@ public class BaseController {
                 );
             }
 
-            val requestBody = MyStringUtils.minifyString(context.body().asString(CommonConstant.UTF_8_STANDARD_CHARSET));
+            val requestBody = MyStringUtils.minifyJsonString(context.body().asString(CommonConstant.UTF_8_STANDARD_CHARSET));
 
             LogUtils.writeLog(
                     LogUtils.Level.INFO,
