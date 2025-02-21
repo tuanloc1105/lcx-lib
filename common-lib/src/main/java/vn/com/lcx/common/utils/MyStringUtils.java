@@ -76,13 +76,13 @@ public final class MyStringUtils {
     }
 
     public static String minifyJsonString(String input) {
-        if (!stringIsJsonFormat(input.trim())) {
-            throw new IllegalArgumentException(input.trim() + " is not a valid JSON string");
-        }
         if (StringUtils.isBlank(input)) {
             return CommonConstant.EMPTY_STRING;
         }
-        if (input.length() > 1000) {
+        if (!stringIsJsonFormat(input.trim())) {
+            throw new IllegalArgumentException(input.trim() + " is not a valid JSON string");
+        }
+        if (input.length() > 100000) {
             return input.substring(0, 50) + "..." + input.substring(input.length() - 50);
         }
         return input
