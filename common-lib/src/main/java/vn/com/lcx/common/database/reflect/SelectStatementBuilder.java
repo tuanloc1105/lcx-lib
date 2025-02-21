@@ -90,7 +90,6 @@ public class SelectStatementBuilder {
                 continue;
             }
             try {
-                int order2 = 0;
                 val subTableAnnotation = field.getAnnotation(SubTable.class);
                 if (subTableAnnotation != null) {
                     final SelectStatementBuilder selectStatementBuilderOfSubTable;
