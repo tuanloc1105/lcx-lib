@@ -222,4 +222,8 @@ public class ClassPool {
         return maxParamConstructor;
     }
 
+    public static <T> T getInstance(String name, Class<T> clazz) {
+        return clazz.cast(CLASS_POOL.get(name));
+    }
+
 }

@@ -8,10 +8,12 @@ import lombok.var;
 import vn.com.lcx.common.constant.CommonConstant;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -460,6 +462,28 @@ public final class FileUtils {
             return filePath.substring(lastDotIndex + 1);
         } else {
             return "";
+        }
+    }
+
+    public static String readResourceFileAsText(ClassLoader classLoader, String fileName) {
+        // Get the resource file as an InputStream from the class loader.
+        try (InputStream inputStream = classLoader.getResourceAsStream(fileName)) {
+            if (inputStream == null) {
+                // File not found in resources
+                return null;
+            }
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            byte[] data = new byte[8192]; // Use a reasonable buffer size
+            int bytesRead;
+            while ((bytesRead = inputStream.read(data, 0, data.length)) != -1) {
+                buffer.write(data, 0, bytesRead);
+            }
+            val result = new String(buffer.toByteArray(), StandardCharsets.UTF_8);
+            buffer.close();
+            return result;
+        } catch (IOException e) {
+            LogUtils.writeLog(e.getMessage(), e);
+            return null;
         }
     }
 
