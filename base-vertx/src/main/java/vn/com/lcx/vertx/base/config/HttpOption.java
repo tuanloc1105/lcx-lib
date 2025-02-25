@@ -39,9 +39,9 @@ public final class HttpOption {
      *
      * @return
      */
-    public static HttpServerOptions configureHttp2H2C() {
+    public static HttpServerOptions configureHttp2H2C(Integer port) {
         return new HttpServerOptions()
-                .setPort(8080)
+                .setPort(port != null &&  port > 0 ? port : 8443)
                 .setLogActivity(true)
                 .setCompressionSupported(true)
                 .setHandle100ContinueAutomatically(true)
