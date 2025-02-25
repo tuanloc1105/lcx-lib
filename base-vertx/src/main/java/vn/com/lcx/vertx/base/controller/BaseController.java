@@ -6,6 +6,7 @@ import io.vertx.codegen.annotations.Nullable;
 import io.vertx.core.Future;
 import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import lombok.Getter;
 import lombok.val;
@@ -417,6 +418,14 @@ public class BaseController {
             }
         }
         MDC.remove(CommonConstant.TRACE_ID_MDC_KEY_NAME);
+    }
+
+    protected <T> T getUser(RoutingContext context, TypeToken<T> typeToken) {
+        final JsonObject jsonObject = context.user().get("accessToken");
+        return this.gson.fromJson(
+                jsonObject.encode(),
+                typeToken.getType()
+        );
     }
 
     protected interface RequestHandler<T extends CommonResponse, B> {
