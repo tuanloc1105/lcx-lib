@@ -65,7 +65,7 @@ public class MyVertxDeployment {
             List<Future<String>> listOfVerticleFuture = new ArrayList<>();
             for (Class<?> aClass : verticles) {
                 if (aClass.getAnnotation(Verticle.class) != null) {
-                    val fields = Arrays.stream(aClass.getDeclaredFields()).filter(f -> !Modifier.isStatic(f.getModifiers())).collect(Collectors.toList());
+                    val fields = Arrays.stream(aClass.getDeclaredFields()).filter(f -> !Modifier.isStatic(f.getModifiers()) && Modifier.isFinal(f.getModifiers())).collect(Collectors.toList());
                     final Class<?>[] fieldArr = fields.stream().map(Field::getType).toArray(Class[]::new);
                     final Object[] args = fields.stream().map(
                             f -> {
