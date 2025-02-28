@@ -217,7 +217,9 @@ public final class ConnectionEntry implements AutoCloseable {
 
     public void shutdown() {
         try {
-            this.connection.close();
+            if (!this.connection.isClosed() && this.isValid()) {
+                this.connection.close();
+            }
         } catch (SQLException e) {
             this.connectionLog.error(e.getMessage(), e);
         }
