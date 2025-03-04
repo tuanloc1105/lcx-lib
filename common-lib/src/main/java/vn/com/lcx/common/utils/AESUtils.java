@@ -17,7 +17,15 @@ public final class AESUtils {
     public static String encryptCBC(String data, String key) throws Exception {
         log.info("START ENCRYPT");
         String iv = key.substring(0, 16);
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+        // Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
+        // Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        // Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        // Cipher cipher = Cipher.getInstance("AES/CFB/NoPadding");
+        // Cipher cipher = Cipher.getInstance("AES/CFB/PKCS5Padding");
+        // Cipher cipher = Cipher.getInstance("AES/OFB/NoPadding");
+        // Cipher cipher = Cipher.getInstance("AES/OFB/PKCS5Padding");
+        // Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
         byte[] dataBytes = data.getBytes(StandardCharsets.UTF_8);
         int plaintextLength = dataBytes.length;
         byte[] plaintext = new byte[plaintextLength];
@@ -36,7 +44,15 @@ public final class AESUtils {
 
         byte[] encrypt = Base64.getDecoder().decode(encrypted.getBytes(StandardCharsets.UTF_8));
 
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+        // Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
+        // Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        // Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        // Cipher cipher = Cipher.getInstance("AES/CFB/NoPadding");
+        // Cipher cipher = Cipher.getInstance("AES/CFB/PKCS5Padding");
+        // Cipher cipher = Cipher.getInstance("AES/OFB/NoPadding");
+        // Cipher cipher = Cipher.getInstance("AES/OFB/PKCS5Padding");
+        // Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
         SecretKeySpec keyspec = new SecretKeySpec(key.getBytes(), "AES");
         IvParameterSpec ivspec = new IvParameterSpec(iv.getBytes());
 
@@ -49,7 +65,15 @@ public final class AESUtils {
     public static String encrypt(String data, String key) throws Exception {
         log.info("START ENCRYPT");
         SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(), "AES");
-        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
+        // Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        // Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
+        // Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        // Cipher cipher = Cipher.getInstance("AES/CFB/NoPadding");
+        // Cipher cipher = Cipher.getInstance("AES/CFB/PKCS5Padding");
+        // Cipher cipher = Cipher.getInstance("AES/OFB/NoPadding");
+        // Cipher cipher = Cipher.getInstance("AES/OFB/PKCS5Padding");
+        // Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
         cipher.init(Cipher.ENCRYPT_MODE, secretKey);
         byte[] byteOriginal = cipher.doFinal(data.getBytes(StandardCharsets.UTF_8));
         return Base64.getEncoder().encodeToString(byteOriginal);
@@ -58,7 +82,15 @@ public final class AESUtils {
     public static String decrypt(String encrypted, String key) throws Exception {
         log.info("START DECRYPT");
         SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(), "AES");
-        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
+        // Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        // Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
+        // Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        // Cipher cipher = Cipher.getInstance("AES/CFB/NoPadding");
+        // Cipher cipher = Cipher.getInstance("AES/CFB/PKCS5Padding");
+        // Cipher cipher = Cipher.getInstance("AES/OFB/NoPadding");
+        // Cipher cipher = Cipher.getInstance("AES/OFB/PKCS5Padding");
+        // Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
         cipher.init(Cipher.DECRYPT_MODE, secretKey);
         return new String(cipher.doFinal(Base64.getDecoder().decode(encrypted)), StandardCharsets.UTF_8);
     }
