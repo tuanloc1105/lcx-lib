@@ -2,6 +2,7 @@ package vn.com.lcx.common.database;
 
 import vn.com.lcx.common.database.type.DBTypeEnum;
 import vn.com.lcx.common.database.type.OracleTypeEnum;
+import vn.com.lcx.common.database.type.PostgresTypeEnum;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -28,6 +29,12 @@ public interface DatabaseExecutor {
     Map<String, Integer> executeOracleStoreProcedureBatch(Connection connection,
                                                           String storeProcedureName,
                                                           List<Map<Integer, Object>> inParameterMaps);
+
+    <T> List<T> executePostgresStoreProcedure(Connection connection,
+                                              String storeProcedureName,
+                                              Map<Integer, Object> inParameters,
+                                              Map<Integer, PostgresTypeEnum> outParameters,
+                                              CallableStatementHandler<List<T>> handler);
 
     int executeMutation(Connection connection,
                         String sqlString,

@@ -7,6 +7,7 @@ import vn.com.lcx.common.constant.CommonConstant;
 import vn.com.lcx.common.database.handler.statement.SqlStatementHandler;
 import vn.com.lcx.common.database.type.DBTypeEnum;
 import vn.com.lcx.common.database.type.OracleTypeEnum;
+import vn.com.lcx.common.database.type.PostgresTypeEnum;
 import vn.com.lcx.common.utils.LogUtils;
 
 import java.math.BigDecimal;
@@ -355,6 +356,128 @@ public class DatabaseExecutorImpl implements DatabaseExecutor {
             this.closeStatementAndResultSet(statement, null);
         }
         return batchExecutionResult;
+    }
+
+    @SuppressWarnings("SqlSourceToSinkFlow")
+    @Override
+    public <T> List<T> executePostgresStoreProcedure(Connection connection,
+                                                     String storeProcedureName,
+                                                     Map<Integer, Object> inParameters,
+                                                     Map<Integer, PostgresTypeEnum> outParameters,
+                                                     CallableStatementHandler<List<T>> handler) {
+
+        try {
+            if (connection.getAutoCommit()) {
+                LogUtils.writeLog2(LogUtils.Level.INFO, "Connection must be disabled auto-commit mode");
+                return null;
+            }
+        } catch (SQLException e) {
+            LogUtils.writeLog2("Cannot check auto-commit status of connection", e);
+            return null;
+        }
+
+        CallableStatement statement = null;
+        List<T> result;
+        try {
+
+            int numberOfParameters = 0;
+
+            if (inParameters != null && !inParameters.isEmpty()) {
+                numberOfParameters += inParameters.size();
+            }
+            if (outParameters != null && !outParameters.isEmpty()) {
+                numberOfParameters += outParameters.size();
+            }
+            String parameterString = "";
+            for (int i = 0; i < numberOfParameters; i++) {
+                if (i == numberOfParameters - 1) {
+                    parameterString += "?";
+                } else {
+                    parameterString += "?, ";
+                }
+            }
+            String sqlCallingSPStatement = String.format(
+                    "CALL %s(%s)",
+                    storeProcedureName,
+                    parameterString
+            );
+            statement = connection.prepareCall(sqlCallingSPStatement);
+            LogUtils.writeLog2(LogUtils.Level.INFO, "\n" + sqlCallingSPStatement.replaceAll("^\\n+|\\n+$", CommonConstant.EMPTY_STRING));
+            var inParameterIsNotNullAndNotEmpty = inParameters != null && !inParameters.isEmpty();
+            if (inParameterIsNotNullAndNotEmpty) {
+                StringBuilder parametersLog = new StringBuilder("input parameters:");
+                for (Integer i : inParameters.keySet()) {
+                    Object parameterValue = inParameters.get(i);
+                    String aNull = String.format(
+                            "\n\t- parameter %s: %s",
+                            String.format("%-3d %-20s)", i, "("),
+                            "NULL"
+                    );
+                    if (parameterValue == null) {
+                        statement.setObject(i, null);
+                        parametersLog.append(
+                                aNull
+                        );
+                        continue;
+                    }
+                    Class<?> parameterClass = inParameters.get(i).getClass();
+                    if (parameterClass.isPrimitive()) {
+                        statement.setObject(i, null);
+                        parametersLog.append(
+                                aNull
+                        );
+                        continue;
+                    }
+                    String parameterSimpleClassName = parameterClass.getSimpleName();
+                    SqlStatementHandler sqlStatementHandler = DATA_TYPE_AND_SQL_STATEMENT_METHOD_MAP.get(parameterSimpleClassName);
+                    if (sqlStatementHandler == null) {
+                        throw new RuntimeException("unknown parameter type");
+                    }
+                    parametersLog.append(
+                            String.format(
+                                    "\n\t- parameter %s: %s",
+                                    String.format("%-3d %-20s)", i, "(" + parameterSimpleClassName),
+                                    parameterValue
+                            )
+                    );
+                    sqlStatementHandler.handle(i, parameterValue, statement);
+                }
+                LogUtils.writeLog2(LogUtils.Level.INFO, parametersLog.toString());
+            }
+            var outParameterIsNotNullAndNotEmpty = outParameters != null && !outParameters.isEmpty();
+            if (outParameterIsNotNullAndNotEmpty) {
+                StringBuilder parametersLog = new StringBuilder("output parameters:");
+                for (Integer i : outParameters.keySet()) {
+                    statement.registerOutParameter(i, outParameters.get(i).getType());
+                    parametersLog.append(
+                            String.format(
+                                    "\n\t- parameter %s: %s",
+                                    String.format("%-3d", i),
+                                    outParameters.get(i).name()
+                            )
+                    );
+                }
+                LogUtils.writeLog2(LogUtils.Level.INFO, parametersLog.toString());
+            }
+            val startingTime = (double) System.currentTimeMillis();
+
+            statement.execute();
+
+            val endingTime = (double) System.currentTimeMillis();
+            val duration = (endingTime - startingTime) / 1000D;
+
+            LogUtils.writeLog2(
+                    LogUtils.Level.INFO, String.format("Executed SQL statement take %.2f second(s)", duration)
+            );
+
+            result = new ArrayList<>(handler.handle(statement));
+        } catch (SQLException e) {
+            LogUtils.writeLog2(e.getMessage(), e);
+            result = null;
+        } finally {
+            this.closeStatementAndResultSet(statement, null);
+        }
+        return result;
     }
 
     @SuppressWarnings("SqlSourceToSinkFlow")
