@@ -141,28 +141,8 @@ public class SelectStatementBuilder {
     }
 
     public static SelectStatementBuilder of(Class<?> entityClass) {
-        SelectStatementBuilder builderClass = BUILDER_MAP.get(entityClass.getName());
-        if (builderClass == null) {
-            synchronized (BUILDER_MAP) {
-                if (BUILDER_MAP.get(entityClass.getName()) == null) {
-                    builderClass = new SelectStatementBuilder(entityClass, false);
-                    BUILDER_MAP.put(entityClass.getName(), builderClass);
-                }
-            }
-        }
-        return builderClass;
+        return BUILDER_MAP.computeIfAbsent(entityClass.getName(), key -> new SelectStatementBuilder(entityClass, false));
     }
-
-    // public static SelectStatementBuilder getInstance(Class<?> entityClass) {
-    //     if (INSTANCE == null) {
-    //         synchronized (SelectStatementBuilder.class) {
-    //             if (INSTANCE == null) {
-    //                 INSTANCE = new SelectStatementBuilder(entityClass);
-    //             }
-    //         }
-    //     }
-    //     return INSTANCE;
-    // }
 
     public String build(String methodName, Object... parameters) {
         final String statement;
@@ -251,7 +231,6 @@ public class SelectStatementBuilder {
         return result.isEmpty() ? CommonConstant.EMPTY_STRING : "\n    " + String.join("\n    ", result);
     }
 
-    @SuppressWarnings("SequencedCollectionMethodCanBeUsed")
     private String parseMethodNameIntoConditionStatement(String methodName, ArrayList<Object> parameters) {
         if (
                 !(methodName.startsWith("findBy")) &&
@@ -473,7 +452,7 @@ public class SelectStatementBuilder {
             format = String.join("", conditionSQLStatement);
         }
         if (parameters.get(parameters.size() - 1) instanceof Pageable && !(methodName.startsWith("count"))) {
-            @SuppressWarnings("PatternVariableCanBeUsed") val page = (Pageable) parameters.get(parameters.size() - 1);
+            val page = (Pageable) parameters.get(parameters.size() - 1);
             if (listOfOrderByStatement.isEmpty()) {
                 page.setEntityClass(this.entityClass);
                 page.fieldToColumn();
