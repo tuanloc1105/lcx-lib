@@ -3,6 +3,7 @@ package vn.com.lcx.vert.processor;
 import org.apache.commons.lang3.StringUtils;
 import vn.com.lcx.common.constant.CommonConstant;
 import vn.com.lcx.common.utils.ExceptionUtils;
+import vn.com.lcx.vertx.base.annotation.process.APIKey;
 import vn.com.lcx.vertx.base.annotation.process.Auth;
 import vn.com.lcx.vertx.base.annotation.process.Controller;
 import vn.com.lcx.vertx.base.annotation.process.Delete;
@@ -82,6 +83,7 @@ public class ControllerProcessor extends AbstractProcessor {
         }
 
         boolean applicationHaveAuthentication = false;
+        boolean applicationHaveAPIKeyAuthentication = false;
 
         if (!classMap.isEmpty()) {
             int count = 1;
@@ -100,10 +102,16 @@ public class ControllerProcessor extends AbstractProcessor {
                 for (ExecutableElement e : currentClass.getValue()) {
 
                     boolean isAuthMethod = false;
+                    boolean isAPIKeyMethod = false;
 
                     if (e.getAnnotation(Auth.class) != null) {
                         applicationHaveAuthentication = true;
                         isAuthMethod = true;
+                    }
+
+                    if (e.getAnnotation(APIKey.class) != null) {
+                        applicationHaveAPIKeyAuthentication = true;
+                        isAPIKeyMethod = true;
                     }
 
                     String basePath;
@@ -191,18 +199,16 @@ public class ControllerProcessor extends AbstractProcessor {
                     }
                     if (StringUtils.isNotBlank(routerConfigureCode)) {
                         if (isAuthMethod) {
-                            routerConfigureCode += String.format(
-                                    ".handler(this::authenticate).handler(this.controller%d::%s);",
-                                    count,
-                                    e.getSimpleName() + CommonConstant.EMPTY_STRING
-                            );
-                        } else {
-                            routerConfigureCode += String.format(
-                                    ".handler(this.controller%d::%s);",
-                                    count,
-                                    e.getSimpleName() + CommonConstant.EMPTY_STRING
-                            );
+                            routerConfigureCode += ".handler(this::authenticate)";
                         }
+                        if (isAPIKeyMethod) {
+                            routerConfigureCode += ".handler(this::validateApiKey)";
+                        }
+                        routerConfigureCode += String.format(
+                                ".handler(this.controller%d::%s);",
+                                count,
+                                e.getSimpleName() + CommonConstant.EMPTY_STRING
+                        );
                         routerConfigures.add(routerConfigureCode);
                     }
                 }
@@ -279,6 +285,7 @@ public class ControllerProcessor extends AbstractProcessor {
                             "    }\n" +
                             "\n" +
                             "%s" +
+                            "%s" +
                             "\n" +
                             "}\n",
                     applicationHaveAuthentication ? "    private final JWTAuth jwtAuth;\n" : CommonConstant.EMPTY_STRING,
@@ -298,7 +305,19 @@ public class ControllerProcessor extends AbstractProcessor {
                             "                })\n" +
                             "                .onFailure(err -> ctx.response().setStatusCode(401).end(\"Invalid token\")\n" +
                             "                );\n" +
-                            "    }\n" : CommonConstant.EMPTY_STRING
+                            "    }\n" : CommonConstant.EMPTY_STRING,
+                    applicationHaveAPIKeyAuthentication ?
+                            "\n" +
+                                    "    public void validateApiKey(RoutingContext context) {\n" +
+                                    "        String apiKey = context.request().getHeader(\"x-api-key\");\n" +
+                                    "        String validApiKey = CommonConstant.applicationConfig.getProperty(\"server.api-key\");\n" +
+                                    "        if (!((apiKey + CommonConstant.EMPTY_STRING).equals(validApiKey))) {\n" +
+                                    "            context.response().setStatusCode(401).end(\"Invalid api key\");\n" +
+                                    "        } else {\n" +
+                                    "            context.next();\n" +
+                                    "        }\n" +
+                                    "    }\n" :
+                            CommonConstant.EMPTY_STRING
             );
             try {
                 JavaFileObject builderFile = this.processingEnv.getFiler().createSourceFile("vn.com.lcx.vertx.verticle.ApplicationVerticle");
