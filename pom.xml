@@ -8,6 +8,7 @@
         <module>common-lib</module>
         <module>processor</module>
         <module>base-vertx</module>
+        <module>vertx-processor</module>
     </modules>
 
     <groupId>vn.com.lcx</groupId>
