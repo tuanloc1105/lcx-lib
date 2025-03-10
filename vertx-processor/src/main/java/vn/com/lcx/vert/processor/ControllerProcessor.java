@@ -265,7 +265,7 @@ public class ControllerProcessor extends AbstractProcessor {
                             "                        .requestHandler(router)\n" +
                             "                        .listen()\n" +
                             "                        .onSuccess(server -> {\n" +
-                            "                            LogUtils.writeLog(LogUtils.Level.INFO, \"HTTP server started on port \" + port);\n" +
+                            "                            LogUtils.writeLog(LogUtils.Level.INFO, \"HTTP2 server started on port \" + port);\n" +
                             "                            startPromise.complete();\n" +
                             "                        })\n" +
                             "                        .onFailure(startPromise::fail);\n" +
