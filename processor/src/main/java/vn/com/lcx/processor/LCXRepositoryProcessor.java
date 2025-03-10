@@ -2,7 +2,6 @@ package vn.com.lcx.processor;
 
 import org.apache.commons.lang3.StringUtils;
 import vn.com.lcx.common.annotation.ColumnName;
-import vn.com.lcx.common.annotation.ExcludingField;
 import vn.com.lcx.common.annotation.IdColumn;
 import vn.com.lcx.common.annotation.Modifying;
 import vn.com.lcx.common.annotation.Query;
@@ -168,15 +167,15 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
                 fields.addAll(getAllFields((TypeElement) superclassElement));
             }
         }
-        return fields.stream().filter(element -> {
-            boolean elementIsField = element.getKind().isField();
-            boolean fieldIsNotFinalOrStatic = !(element.getModifiers().contains(Modifier.FINAL) || element.getModifiers().contains(Modifier.STATIC));
-            if (elementIsField && fieldIsNotFinalOrStatic) {
-                ExcludingField excludingField = element.getAnnotation(ExcludingField.class);
-                return excludingField == null;
-            }
-            return false;
-        }).collect(Collectors.toCollection(HashSet::new));
+        return fields.stream()
+                .filter(element -> {
+                    boolean elementIsField = element.getKind().isField();
+                    boolean fieldIsNotFinalOrStatic = !(element.getModifiers().contains(Modifier.FINAL) || element.getModifiers().contains(Modifier.STATIC));
+                    ColumnName columnName = element.getAnnotation(ColumnName.class);
+                    final boolean isAnnotatedWithColumnNameAnnotation = columnName != null;
+                    return elementIsField && fieldIsNotFinalOrStatic && isAnnotatedWithColumnNameAnnotation;
+                })
+                .collect(Collectors.toCollection(HashSet::new));
     }
 
     public boolean extendsInterface(TypeElement typeElement, String interfaceName) {

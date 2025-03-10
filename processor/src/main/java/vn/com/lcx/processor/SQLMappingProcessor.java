@@ -3,7 +3,6 @@ package vn.com.lcx.processor;
 import org.apache.commons.lang3.StringUtils;
 import vn.com.lcx.common.annotation.AdditionalCode;
 import vn.com.lcx.common.annotation.ColumnName;
-import vn.com.lcx.common.annotation.ExcludingField;
 import vn.com.lcx.common.annotation.IdColumn;
 import vn.com.lcx.common.annotation.SecondaryIdColumn;
 import vn.com.lcx.common.annotation.TableName;
@@ -357,17 +356,9 @@ public class SQLMappingProcessor extends AbstractProcessor {
                 .filter(element -> {
                     boolean elementIsField = element.getKind().isField();
                     boolean fieldIsNotFinalOrStatic = !(element.getModifiers().contains(Modifier.FINAL) || element.getModifiers().contains(Modifier.STATIC));
-                    if (elementIsField && fieldIsNotFinalOrStatic) {
-                        ExcludingField excludingField = element.getAnnotation(ExcludingField.class);
-                        final boolean isNotAnnotatedWithExcludingFieldAnnotation = excludingField == null;
-                        return isNotAnnotatedWithExcludingFieldAnnotation;
-                    }
-                    return false;
-                })
-                .filter(element -> {
                     ColumnName columnName = element.getAnnotation(ColumnName.class);
                     final boolean isAnnotatedWithColumnNameAnnotation = columnName != null;
-                    return isAnnotatedWithColumnNameAnnotation;
+                    return elementIsField && fieldIsNotFinalOrStatic && isAnnotatedWithColumnNameAnnotation;
                 })
                 .collect(Collectors.toSet());
     }

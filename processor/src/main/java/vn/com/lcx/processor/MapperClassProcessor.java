@@ -1,6 +1,5 @@
 package vn.com.lcx.processor;
 
-import vn.com.lcx.common.annotation.ExcludingField;
 import vn.com.lcx.common.annotation.mapper.MapperClass;
 import vn.com.lcx.common.annotation.mapper.Mapping;
 import vn.com.lcx.common.annotation.mapper.Merging;
@@ -300,15 +299,13 @@ public class MapperClassProcessor extends AbstractProcessor {
                 fields.addAll(getAllFields((TypeElement) superclassElement));
             }
         }
-        return fields.stream().filter(element -> {
-            boolean elementIsField = element.getKind().isField();
-            boolean fieldIsNotFinalOrStatic = !(element.getModifiers().contains(Modifier.FINAL) || element.getModifiers().contains(Modifier.STATIC));
-            if (elementIsField && fieldIsNotFinalOrStatic) {
-                ExcludingField excludingField = element.getAnnotation(ExcludingField.class);
-                return excludingField == null;
-            }
-            return false;
-        }).collect(Collectors.toCollection(HashSet::new));
+        return fields.stream()
+                .filter(element -> {
+                    boolean elementIsField = element.getKind().isField();
+                    boolean fieldIsNotFinalOrStatic = !(element.getModifiers().contains(Modifier.FINAL) || element.getModifiers().contains(Modifier.STATIC));
+                    return elementIsField && fieldIsNotFinalOrStatic;
+                })
+                .collect(Collectors.toCollection(HashSet::new));
     }
 
     public Element findAppropriateFieldOfInputClassFromOutputFieldName(List<Element> allElementOfAClass, final String fieldName, final String fieldDataType) {
