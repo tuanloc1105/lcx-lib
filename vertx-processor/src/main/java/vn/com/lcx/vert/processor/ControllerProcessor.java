@@ -135,7 +135,6 @@ public class ControllerProcessor extends AbstractProcessor {
                         }
                         routerConfigureCode = String.format(
                                 "router.get(\"%s\").handler(this::createUUIDHandler)",
-                                count,
                                 basePath + apiPath
                         );
                     }
@@ -152,8 +151,7 @@ public class ControllerProcessor extends AbstractProcessor {
                             apiPath = CommonConstant.EMPTY_STRING;
                         }
                         routerConfigureCode = String.format(
-                                "router.get(\"%s\").handler(this::createUUIDHandler)",
-                                count,
+                                "router.post(\"%s\").handler(this::createUUIDHandler)",
                                 basePath + apiPath
                         );
                     }
@@ -170,8 +168,7 @@ public class ControllerProcessor extends AbstractProcessor {
                             apiPath = CommonConstant.EMPTY_STRING;
                         }
                         routerConfigureCode = String.format(
-                                "router.get(\"%s\").handler(this::createUUIDHandler)",
-                                count,
+                                "router.put(\"%s\").handler(this::createUUIDHandler)",
                                 basePath + apiPath
                         );
                     }
@@ -188,8 +185,7 @@ public class ControllerProcessor extends AbstractProcessor {
                             apiPath = CommonConstant.EMPTY_STRING;
                         }
                         routerConfigureCode = String.format(
-                                "router.get(\"%s\").handler(this::createUUIDHandler)",
-                                count,
+                                "router.delete(\"%s\").handler(this::createUUIDHandler)",
                                 basePath + apiPath
                         );
                     }
@@ -288,7 +284,7 @@ public class ControllerProcessor extends AbstractProcessor {
                     applicationHaveAuthentication ? "    private final JWTAuth jwtAuth;\n" : CommonConstant.EMPTY_STRING,
                     classProperties.stream().collect(Collectors.joining(";\n    ", CommonConstant.EMPTY_STRING, ";\n\n")),
                     routerConfigures.stream().collect(Collectors.joining("\n            ", CommonConstant.EMPTY_STRING, "\n")),
-                    applicationHaveAuthentication ?                             "    private void authenticate(RoutingContext ctx) {\n" +
+                    applicationHaveAuthentication ? "    private void authenticate(RoutingContext ctx) {\n" +
                             "        String authHeader = ctx.request().getHeader(\"Authorization\");\n" +
                             "        if (authHeader == null || !authHeader.startsWith(\"Bearer \")) {\n" +
                             "            ctx.response().setStatusCode(401).end(\"Missing or invalid Authorization header\");\n" +
@@ -302,7 +298,7 @@ public class ControllerProcessor extends AbstractProcessor {
                             "                })\n" +
                             "                .onFailure(err -> ctx.response().setStatusCode(401).end(\"Invalid token\")\n" +
                             "                );\n" +
-                            "    }\n"  : CommonConstant.EMPTY_STRING
+                            "    }\n" : CommonConstant.EMPTY_STRING
             );
             try {
                 JavaFileObject builderFile = this.processingEnv.getFiler().createSourceFile("vn.com.lcx.vertx.verticle.ApplicationVerticle");
