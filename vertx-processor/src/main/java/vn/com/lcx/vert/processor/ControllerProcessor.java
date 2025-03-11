@@ -227,6 +227,7 @@ public class ControllerProcessor extends AbstractProcessor {
                     }
                 }
                 ++count;
+                routerConfigures.add("\n");
             }
             if (applicationHaveAuthentication) {
                 constructorParameters.add("JWTAuth jwtAuth");
