@@ -256,8 +256,8 @@ public class ControllerProcessor extends AbstractProcessor {
                             "@Verticle\n" +
                             "public class ApplicationVerticle extends VertxBaseVerticle {\n" +
                             "\n" +
-                            "%s" +
                             "    %s\n" +
+                            "%s" +
                             "%s\n" +
                             "    @Override\n" +
                             "    public void start(Promise<Void> startPromise) {\n" +
@@ -310,8 +310,8 @@ public class ControllerProcessor extends AbstractProcessor {
                             "%s" +
                             "\n" +
                             "}\n",
-                    applicationHaveAuthentication ? "    private final JWTAuth jwtAuth;\n" : CommonConstant.EMPTY_STRING,
                     classProperties.stream().collect(Collectors.joining(";\n    ", CommonConstant.EMPTY_STRING, ";")),
+                    applicationHaveAuthentication ? "    private final JWTAuth jwtAuth;\n" : CommonConstant.EMPTY_STRING,
                     constructor,
                     routerConfigures.stream().collect(Collectors.joining("\n            ", CommonConstant.EMPTY_STRING, "\n")),
                     applicationHaveAuthentication ? "    private void authenticate(RoutingContext ctx) {\n" +
