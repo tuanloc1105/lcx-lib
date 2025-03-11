@@ -90,8 +90,23 @@ public class ControllerProcessor extends AbstractProcessor {
 
             List<String> classProperties = new ArrayList<>();
             List<String> routerConfigures = new ArrayList<>();
+            List<String> constructorParameters = new ArrayList<>();
+            List<String> constructorBody = new ArrayList<>();
 
             for (Map.Entry<TypeElement, List<ExecutableElement>> currentClass : classMap.entrySet()) {
+                constructorParameters.add(
+                        String.format(
+                                "%s controller%d",
+                                currentClass.getKey().getQualifiedName() + CommonConstant.EMPTY_STRING,
+                                count
+                        )
+                );
+                constructorBody.add(
+                        String.format(
+                                "this.controller%1$d = controller%1$d;",
+                                count
+                        )
+                );
                 classProperties.add(
                         String.format(
                                 "private final %s controller%d",
@@ -214,6 +229,15 @@ public class ControllerProcessor extends AbstractProcessor {
                 }
                 ++count;
             }
+            if (applicationHaveAuthentication) {
+                constructorParameters.add("JWTAuth jwtAuth");
+                constructorBody.add("this.jwtAuth = jwtAuth;");
+            }
+            final String constructor = String.format(
+                    "\n    public ApplicationVerticle(%s) {\n%s\n    }\n",
+                    String.join(", ", constructorParameters),
+                    constructorBody.stream().collect(Collectors.joining("\n       ", "       ", CommonConstant.EMPTY_STRING))
+            );
             String codeToWrite = String.format(
                     "" +
                             "package vn.com.lcx.vertx.verticle;\n" +
@@ -232,11 +256,11 @@ public class ControllerProcessor extends AbstractProcessor {
                             "import vn.com.lcx.vertx.base.verticle.VertxBaseVerticle;\n" +
                             "\n" +
                             "@Verticle\n" +
-                            "@lombok.RequiredArgsConstructor\n" +
                             "public class ApplicationVerticle extends VertxBaseVerticle {\n" +
                             "\n" +
                             "%s" +
                             "    %s\n" +
+                            "%s\n" +
                             "    @Override\n" +
                             "    public void start(Promise<Void> startPromise) {\n" +
                             "        try {\n" +
@@ -289,7 +313,8 @@ public class ControllerProcessor extends AbstractProcessor {
                             "\n" +
                             "}\n",
                     applicationHaveAuthentication ? "    private final JWTAuth jwtAuth;\n" : CommonConstant.EMPTY_STRING,
-                    classProperties.stream().collect(Collectors.joining(";\n    ", CommonConstant.EMPTY_STRING, ";\n\n")),
+                    classProperties.stream().collect(Collectors.joining(";\n    ", CommonConstant.EMPTY_STRING, ";")),
+                    constructor,
                     routerConfigures.stream().collect(Collectors.joining("\n            ", CommonConstant.EMPTY_STRING, "\n")),
                     applicationHaveAuthentication ? "    private void authenticate(RoutingContext ctx) {\n" +
                             "        String authHeader = ctx.request().getHeader(\"Authorization\");\n" +
@@ -307,7 +332,6 @@ public class ControllerProcessor extends AbstractProcessor {
                             "                );\n" +
                             "    }\n" : CommonConstant.EMPTY_STRING,
                     applicationHaveAPIKeyAuthentication ?
-                            "\n" +
                                     "    public void validateApiKey(RoutingContext context) {\n" +
                                     "        String apiKey = context.request().getHeader(\"x-api-key\");\n" +
                                     "        String validApiKey = CommonConstant.applicationConfig.getProperty(\"server.api-key\");\n" +
