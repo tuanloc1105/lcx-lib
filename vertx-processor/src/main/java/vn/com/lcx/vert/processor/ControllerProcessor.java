@@ -92,6 +92,7 @@ public class ControllerProcessor extends AbstractProcessor {
             List<String> constructorBody = new ArrayList<>();
 
             for (Map.Entry<TypeElement, List<ExecutableElement>> currentClass : classMap.entrySet()) {
+                System.out.printf("Configuring route for controller : %s\n", currentClass.getKey().getQualifiedName());
                 constructorParameters.add(
                         String.format(
                                 "%s controller%d",
