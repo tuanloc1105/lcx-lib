@@ -215,7 +215,6 @@ public class BaseController {
                 if (StringUtils.isBlank(requestBody)) {
                     throw new InternalServiceException(ErrorCodeEnums.INVALID_REQUEST, "Empty request body");
                 }
-                LogUtils.writeLog(LogUtils.Level.INFO, requestBody);
                 B requestObject = gson.fromJson(requestBody, requestBodyClass.getType());
                 val errorFields = AutoValidation.validate(requestObject);
                 if (!errorFields.isEmpty()) {

@@ -45,8 +45,6 @@ public class ControllerProcessor extends AbstractProcessor {
             if (annotatedElement instanceof TypeElement) {
                 TypeElement typeElement = (TypeElement) annotatedElement;
                 try {
-                    System.out.println("ok");
-
                     // Get all methods
                     List<ExecutableElement> allMethodsOfClass = this.processingEnv.getElementUtils().getAllMembers(typeElement).stream()
                             .filter(e -> {
