@@ -8,6 +8,7 @@ import vn.com.lcx.common.annotation.Instance;
 import vn.com.lcx.common.annotation.InstanceClass;
 import vn.com.lcx.common.annotation.PostConstruct;
 import vn.com.lcx.common.annotation.Repository;
+import vn.com.lcx.common.annotation.TableName;
 import vn.com.lcx.common.annotation.Verticle;
 import vn.com.lcx.common.annotation.mapper.Mapper;
 import vn.com.lcx.common.annotation.mapper.MapperClass;
@@ -15,14 +16,19 @@ import vn.com.lcx.common.constant.CommonConstant;
 import vn.com.lcx.common.database.DatabaseExecutor;
 import vn.com.lcx.common.database.DatabaseExecutorImpl;
 import vn.com.lcx.common.database.repository.LCXRepository;
+import vn.com.lcx.common.database.utils.EntityUtils;
 import vn.com.lcx.common.proxy.RepositoryProxyHandler;
 import vn.com.lcx.common.scanner.PackageScanner;
+import vn.com.lcx.common.utils.DateTimeUtils;
+import vn.com.lcx.common.utils.FileUtils;
 import vn.com.lcx.common.utils.PropertiesUtils;
 
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,11 +36,14 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import static vn.com.lcx.common.utils.FileUtils.createFolderIfNotExists;
+
 public class ClassPool {
 
     public static final ConcurrentHashMap<String, Object> CLASS_POOL = new ConcurrentHashMap<>();
 
     public static void init(final List<String> packagesToScan, final List<Class<?>> verticleClass) {
+        packagesToScan.add("vn.com.lcx");
         ClassLoader classLoader = ClassPool.class.getClassLoader();
         val configFile = System.getProperty("application_config.file");
         if (configFile != null) {
@@ -51,10 +60,27 @@ public class ClassPool {
                 }
             });
 
+            val analyzeEntities = Boolean.parseBoolean(CommonConstant.applicationConfig.getProperty("database.generate_sql") + CommonConstant.EMPTY_STRING);
+            val sourceType = CommonConstant.applicationConfig.getProperty("database.source_type");
+            val folderPath = FileUtils.pathJoining(
+                    CommonConstant.ROOT_DIRECTORY_PROJECT_PATH,
+                    "data",
+                    "sql",
+                    DateTimeUtils.generateCurrentLocalDateDefault().format(DateTimeFormatter.ofPattern(CommonConstant.DEFAULT_LOCAL_DATE_STRING_PATTERN))
+            );
+            FileUtils.deleteFolder(new File(folderPath));
+            createFolderIfNotExists(folderPath);
             val postHandleComponent = new ArrayList<Class<?>>();
             val handledPostHandleComponent = new ArrayList<Class<?>>();
 
             for (Class<?> aClass : listOfClassInPackage) {
+
+                if (aClass.getAnnotation(TableName.class) != null) {
+                    if (analyzeEntities) {
+                        EntityUtils.analyzeEntityClass(aClass, sourceType, folderPath);
+                    }
+                    continue;
+                }
 
                 if (aClass.getAnnotation(Verticle.class) != null) {
                     verticleClass.add(aClass);
@@ -98,6 +124,8 @@ public class ClassPool {
                     }
                 }
             }
+
+            // TODO this part is waiting for another method implementation
             var count = 0;
             val limit = 10;
             while (postHandleComponent.size() != handledPostHandleComponent.size()) {

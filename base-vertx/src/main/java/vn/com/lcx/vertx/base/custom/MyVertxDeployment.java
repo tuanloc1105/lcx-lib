@@ -5,9 +5,9 @@ import io.vertx.core.Vertx;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.slf4j.LoggerFactory;
-import vn.com.lcx.vertx.base.verticle.VertxBaseVerticle;
 import vn.com.lcx.common.annotation.Verticle;
 import vn.com.lcx.common.config.ClassPool;
+import vn.com.lcx.vertx.base.verticle.VertxBaseVerticle;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -17,6 +17,7 @@ import java.lang.reflect.Modifier;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -107,6 +108,10 @@ public class MyVertxDeployment {
             throw new RuntimeException(e);
         }
 
+    }
+
+    public void deployVerticle(String packageToScan, Supplier<Void> preconfigure) {
+        this.deployVerticle(new ArrayList<>(Collections.singleton(packageToScan)), preconfigure);
     }
 
 }
