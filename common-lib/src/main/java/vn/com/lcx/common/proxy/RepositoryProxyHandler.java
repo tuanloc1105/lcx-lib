@@ -44,7 +44,11 @@ public class RepositoryProxyHandler<T> implements InvocationHandler {
         }
 
         this.log.info("Executing method: {}", methodName);
-        return method.invoke(target, args);
+        try {
+            return method.invoke(target, args);
+        }catch (Exception e) {
+            throw new RuntimeException("Cannot invoke method: " + methodName);
+        }
     }
 
     private Object invokeDefaultMethod(Object proxy, Method method, Object[] args) throws Throwable {

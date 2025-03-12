@@ -743,7 +743,7 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
                                 "            }\n" +
                                 "            entity.set%2$s(id);\n" +
                                 "        } catch (Exception e) {\n" +
-                                "            throw new RuntimeException(e);\n" +
+                                "            throw new RuntimeException(\"Can not insert\");\n" +
                                 "        }\n" +
                                 "    }",
                         genericEntityClass.getQualifiedName().toString(),
@@ -791,7 +791,7 @@ public class LCXRepositoryProcessor extends AbstractProcessor {
                                 "            }\n" +
                                 "            entity.set%2$s(id);\n" +
                                 "        } catch (Exception e) {\n" +
-                                "            throw new RuntimeException(e);\n" +
+                                "            throw new RuntimeException(\"Can not insert\");\n" +
                                 "        }\n" +
                                 "    }",
                         genericEntityClass.getQualifiedName().toString(),

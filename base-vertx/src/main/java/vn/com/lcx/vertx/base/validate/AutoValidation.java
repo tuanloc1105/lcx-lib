@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public final class AutoValidation {
 
     public static List<String> validate(Object validateObject) {
-        if (!(validateObject.getClass().getName().contains("vn.com"))) {
+        if (!(validateObject.getClass().getName().contains("vn.")) && !(validateObject.getClass().getName().contains("com."))) {
             return new ArrayList<>();
         }
         val errorFields = new ArrayList<String>();

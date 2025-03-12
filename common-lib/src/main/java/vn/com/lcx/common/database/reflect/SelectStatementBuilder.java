@@ -151,7 +151,7 @@ public class SelectStatementBuilder {
         } else {
             statement = this.generateSqlStatement();
         }
-        if (StringUtils.isNotBlank(methodName)) {
+        if (StringUtils.isNotBlank(methodName) && !methodName.equals("findAll")) {
             return String.format(
                     "%s\nWHERE\n    %s",
                     statement,
@@ -169,7 +169,7 @@ public class SelectStatementBuilder {
         } else {
             statement = this.generateSqlStatementFullJoin();
         }
-        if (StringUtils.isNotBlank(methodName)) {
+        if (StringUtils.isNotBlank(methodName) && !methodName.equals("findAll")) {
             return String.format(
                     "%s\nWHERE\n    %s",
                     statement,

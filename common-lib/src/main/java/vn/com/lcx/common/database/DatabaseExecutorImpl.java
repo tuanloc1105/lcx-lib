@@ -629,7 +629,6 @@ public class DatabaseExecutorImpl implements DatabaseExecutor {
                 }
             }
 
-
             val endingTime = (double) System.currentTimeMillis();
             val duration = (endingTime - startingTime) / 1000D;
 
@@ -638,7 +637,7 @@ public class DatabaseExecutorImpl implements DatabaseExecutor {
             );
 
         } catch (SQLException e) {
-            LogUtils.writeLog2(e.getMessage(), e);
+            throw new RuntimeException("Cannot insert");
         } finally {
             this.closeStatementAndResultSet(statement, null);
         }
