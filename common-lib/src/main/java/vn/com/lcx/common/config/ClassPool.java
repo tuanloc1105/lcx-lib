@@ -137,11 +137,7 @@ public class ClassPool {
                         continue;
                     }
                     val fields = new ArrayList<Field>();
-                    if (aClass.getSuperclass() != null) {
-                        List<Field> superClassField = Arrays.asList(aClass.getSuperclass().getDeclaredFields());
-                        fields.addAll(superClassField);
-                    }
-                    fields.addAll(Arrays.asList(aClass.getDeclaredFields()));
+                    getFieldsOfClass(fields, aClass);
                     val fieldsOfComponent = fields.stream().filter(f -> !Modifier.isStatic(f.getModifiers()) && Modifier.isFinal(f.getModifiers())).collect(Collectors.toList());
 
                     // final Class<?>[] asd = getConstructorWithMostParameters(aClass).getParameterTypes();
@@ -234,6 +230,14 @@ public class ClassPool {
             LoggerFactory.getLogger(ClassPool.class).error(e.getMessage(), e);
             throw new RuntimeException(e);
         }
+    }
+
+    private static void getFieldsOfClass(final ArrayList<Field> fields, Class<?> aClass) {
+        if (aClass.getSuperclass() != null) {
+            List<Field> superClassField = Arrays.asList(aClass.getSuperclass().getDeclaredFields());
+            fields.addAll(superClassField);
+        }
+        fields.addAll(Arrays.asList(aClass.getDeclaredFields()));
     }
 
     public static Constructor<?> getConstructorWithMostParameters(Class<?> clazz) {
