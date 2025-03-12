@@ -3,34 +3,13 @@ server:
   port: 8123
   enable-http-2: true
 database:
-  mblp:
-    host: 10.0.65.66
-    port: 1521
-    name: MBLP
-    driver_class_name: oracle.jdbc.driver.OracleDriver
-    username: ECRM
-    password: ecrm$1234
-  way4:
-    host: 10.0.65.66
-    port: 1521
-    name: WAY4DB19
-    driver_class_name: oracle.jdbc.driver.OracleDriver
-    username: hdb
-    password: hdb1234
-  ecrm:
-    host: 10.0.65.66
-    port: 1521
-    name: ECRM
-    driver_class_name: oracle.jdbc.driver.OracleDriver
-    username: ECRM
-    password: ecrm$1234
-  eocd:
-    host: 10.0.65.87
-    port: 1521
-    name: EOCD2
-    driver_class_name: oracle.jdbc.driver.OracleDriver
-    username: EOC
-    password: eocd2$1234
+  lms_auto:
+    host: 10.0.113.8
+    port: '5432'
+    username: postgres
+    password: postgres
+    driver_class_name: org.postgresql.Driver
+    name: lms
   max_pool_size: 10
   initial_pool_size: 5
   max_timeout: 10
