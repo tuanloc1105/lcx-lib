@@ -8,6 +8,6 @@ import vn.com.lcx.vertx.base.custom.MyVertxDeployment;
 @ComponentScan(value = {"com.example"})
 public class App {
     public static void main(String[] args) {
-        MyVertxDeployment.getInstance().deployVerticle(App.class, null);
+        MyVertxDeployment.getInstance().deployVerticle(App.class);
     }
 }
