@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public final class MailHelper {
 
@@ -170,13 +171,17 @@ public final class MailHelper {
                                             "\n    - cc email: %s" +
                                             "\n    - bcc email: %s" +
                                             "\n    - subject: %s" +
-                                            "\n    - content: %s",
+                                            "\n    - content: %s" +
+                                            "\n    - file(s): %s",
                                     mailProperties.getUsername(),
                                     String.join(", ", toUsers),
                                     String.join(", ", ccUsers),
                                     String.join(", ", bccUsers),
                                     mailInfo.getSubject(),
-                                    mailInfo.getBody()
+                                    mailInfo.getBody(),
+                                    mailInfo.getFileAttachments()
+                                            .stream()
+                                            .collect(Collectors.joining(", ", "[", "]"))
                             )
                     );
                     transport.sendMessage(message, message.getAllRecipients());
