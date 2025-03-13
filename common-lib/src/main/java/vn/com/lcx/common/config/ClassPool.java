@@ -31,6 +31,7 @@ import java.lang.reflect.Modifier;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -59,6 +60,10 @@ public class ClassPool {
                 } catch (Exception ignore) {
                 }
             });
+
+            val setOfClassInPackage = new ArrayList<>(new HashSet<>(listOfClassInPackage));
+            listOfClassInPackage.clear();
+            listOfClassInPackage.addAll(setOfClassInPackage);
 
             val analyzeEntities = Boolean.parseBoolean(CommonConstant.applicationConfig.getProperty("database.generate_sql") + CommonConstant.EMPTY_STRING);
             val sourceType = CommonConstant.applicationConfig.getProperty("database.source_type");

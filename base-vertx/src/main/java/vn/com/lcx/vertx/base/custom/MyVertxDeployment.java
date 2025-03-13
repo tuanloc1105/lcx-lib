@@ -7,6 +7,8 @@ import lombok.val;
 import org.slf4j.LoggerFactory;
 import vn.com.lcx.common.annotation.Verticle;
 import vn.com.lcx.common.config.ClassPool;
+import vn.com.lcx.vertx.base.annotation.app.ComponentScan;
+import vn.com.lcx.vertx.base.annotation.app.VertxApplication;
 import vn.com.lcx.vertx.base.verticle.VertxBaseVerticle;
 
 import java.io.ByteArrayInputStream;
@@ -41,7 +43,7 @@ public class MyVertxDeployment {
         return INSTANCE;
     }
 
-    public static String getCharacterEncoding() {
+    private static String getCharacterEncoding() {
         // Creating an array of byte type chars and
         // passing random  alphabet as an argument.abstract
         // Say alphabet be 'w'
@@ -57,9 +59,11 @@ public class MyVertxDeployment {
         return inputStreamReader.getEncoding();
     }
 
-    public void deployVerticle(final List<String> packagesToScan, Supplier<Void> preconfigure) {
+    private void deployVerticle(final List<String> packagesToScan, Supplier<Void> preconfigure) {
         try {
-            preconfigure.get();
+            if (preconfigure != null) {
+                preconfigure.get();
+            }
             List<Class<?>> verticles = new ArrayList<>();
             val appStartingTime = (double) System.currentTimeMillis();
             ClassPool.init(packagesToScan, verticles);
@@ -110,8 +114,34 @@ public class MyVertxDeployment {
 
     }
 
-    public void deployVerticle(String packageToScan, Supplier<Void> preconfigure) {
+    private void deployVerticle(String packageToScan, Supplier<Void> preconfigure) {
         this.deployVerticle(new ArrayList<>(Collections.singleton(packageToScan)), preconfigure);
+    }
+
+    public void deployVerticle(Class<?> mainClass, Supplier<Void> preconfigure) {
+        if (mainClass.getAnnotation(VertxApplication.class) == null) {
+            throw new RuntimeException("Class must by annotated with @VertxApplication");
+        }
+        val listOfPackageToScan = new ArrayList<String>();
+        listOfPackageToScan.add(mainClass.getPackage().getName());
+        if (mainClass.getAnnotation(ComponentScan.class) != null && mainClass.getAnnotation(ComponentScan.class).value().length > 0) {
+            val pkgs = mainClass.getAnnotation(ComponentScan.class).value();
+            listOfPackageToScan.addAll(new ArrayList<>(Arrays.asList(pkgs)));
+        }
+        this.deployVerticle(listOfPackageToScan, preconfigure);
+    }
+
+    public void deployVerticle(Class<?> mainClass) {
+        if (mainClass.getAnnotation(VertxApplication.class) == null) {
+            throw new RuntimeException("Class must by annotated with @VertxApplication");
+        }
+        val listOfPackageToScan = new ArrayList<String>();
+        listOfPackageToScan.add(mainClass.getPackage().getName());
+        if (mainClass.getAnnotation(ComponentScan.class) != null && mainClass.getAnnotation(ComponentScan.class).value().length > 0) {
+            val pkgs = mainClass.getAnnotation(ComponentScan.class).value();
+            listOfPackageToScan.addAll(new ArrayList<>(Arrays.asList(pkgs)));
+        }
+        this.deployVerticle(listOfPackageToScan, null);
     }
 
 }
