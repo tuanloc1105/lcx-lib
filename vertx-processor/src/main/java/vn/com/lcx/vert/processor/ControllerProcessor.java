@@ -33,8 +33,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @SupportedAnnotationTypes("vn.com.lcx.vertx.base.annotation.process.Controller")
-@SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class ControllerProcessor extends AbstractProcessor {
+
+    @Override
+    public SourceVersion getSupportedSourceVersion() {
+        return SourceVersion.latest();
+    }
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {

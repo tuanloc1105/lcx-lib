@@ -31,8 +31,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @SupportedAnnotationTypes("vn.com.lcx.common.annotation.mapper.MapperClass")
-@SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class MapperClassProcessor extends AbstractProcessor {
+
+    @Override
+    public SourceVersion getSupportedSourceVersion() {
+        return SourceVersion.latest();
+    }
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {

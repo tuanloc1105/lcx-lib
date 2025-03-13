@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package user;
+
+option java_package = "com.example.grpc";
+option java_outer_classname = "UserProto";
+
+service User {
+  rpc GetUserById (UserRequest) returns (UserResponse);
+}
+
+message UserResponse {
+  int64 id = 1;
+  string firstName = 2;
+  string lastName = 3;
+  int32 age = 4;
+}
+
+message UserRequest {
+  int64 id = 1;
+}

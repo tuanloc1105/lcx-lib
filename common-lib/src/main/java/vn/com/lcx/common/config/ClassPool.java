@@ -97,7 +97,8 @@ public class ClassPool {
                     val implementClassName = aClass.getName() + "Implement";
                     val repository = (LCXRepository<?>) Class.forName(implementClassName).getDeclaredConstructor(DatabaseExecutor.class).newInstance(DatabaseExecutorImpl.getInstance());
                     val repositoryProxy = RepositoryProxyHandler.createProxy(aClass, repository);
-                    CLASS_POOL.put(aClass.getName(), repositoryProxy);
+                    CLASS_POOL.put(aClass.getName() + "proxy", repositoryProxy);
+                    CLASS_POOL.put(aClass.getName(), repository);
                     CLASS_POOL.put(implementClassName, repository);
                     continue;
                 }
@@ -259,8 +260,16 @@ public class ClassPool {
         return maxParamConstructor;
     }
 
+    public static Object getInstance(String name) {
+        return CLASS_POOL.get(name);
+    }
+
     public static <T> T getInstance(String name, Class<T> clazz) {
         return clazz.cast(CLASS_POOL.get(name));
+    }
+
+    public static <T> T getInstance(Class<T> clazz) {
+        return clazz.cast(CLASS_POOL.get(clazz.getName()));
     }
 
 }

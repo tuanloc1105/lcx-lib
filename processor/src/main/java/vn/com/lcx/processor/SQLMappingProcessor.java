@@ -42,8 +42,12 @@ import static vn.com.lcx.common.utils.WordCaseUtils.capitalize;
 import static vn.com.lcx.common.utils.WordCaseUtils.convertCamelToConstant;
 
 @SupportedAnnotationTypes("vn.com.lcx.common.annotation.SQLMapping")
-@SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class SQLMappingProcessor extends AbstractProcessor {
+
+    @Override
+    public SourceVersion getSupportedSourceVersion() {
+        return SourceVersion.latest();
+    }
 
     private static final String LOGGING_FUNCTION = "org.slf4j.LoggerFactory.error(\"Cannot mapping result set\", sqlException);";
 

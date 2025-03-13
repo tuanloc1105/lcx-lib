@@ -67,6 +67,9 @@ public class MyVertxDeployment {
             List<Class<?>> verticles = new ArrayList<>();
             val appStartingTime = (double) System.currentTimeMillis();
             ClassPool.init(packagesToScan, verticles);
+            if (verticles.isEmpty()) {
+                return;
+            }
             List<Future<String>> listOfVerticleFuture = new ArrayList<>();
             for (Class<?> aClass : verticles) {
                 if (aClass.getAnnotation(Verticle.class) != null) {

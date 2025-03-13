@@ -45,8 +45,13 @@ import static vn.com.lcx.common.constant.JavaSqlResultSetConstant.DOT;
 import static vn.com.lcx.common.utils.WordCaseUtils.convertCamelToConstant;
 
 @SupportedAnnotationTypes("vn.com.lcx.common.annotation.Repository")
-@SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class LCXRepositoryProcessor extends AbstractProcessor {
+
+    @Override
+    public SourceVersion getSupportedSourceVersion() {
+        return SourceVersion.latest();
+    }
+
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 
