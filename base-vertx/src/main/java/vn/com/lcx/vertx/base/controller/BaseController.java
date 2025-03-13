@@ -341,7 +341,12 @@ public class BaseController {
                 if (StringUtils.isBlank(requestBody)) {
                     throw new InternalServiceException(ErrorCodeEnums.INVALID_REQUEST, "Empty request body");
                 }
-                response = requestHandler.handle(context, gson.fromJson(requestBody, requestBodyClass.getType()));
+                B requestObject = gson.fromJson(requestBody, requestBodyClass.getType());
+                val errorFields = AutoValidation.validate(requestObject);
+                if (!errorFields.isEmpty()) {
+                    throw new InternalServiceException(ErrorCodeEnums.INVALID_REQUEST, errorFields.toString());
+                }
+                response = requestHandler.handle(context, requestObject);
             }
 
             response.setTrace(trace);

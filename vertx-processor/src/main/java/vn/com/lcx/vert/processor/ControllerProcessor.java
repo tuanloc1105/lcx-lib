@@ -227,7 +227,7 @@ public class ControllerProcessor extends AbstractProcessor {
                     }
                 }
                 ++count;
-                routerConfigures.add("\n");
+                routerConfigures.add("");
             }
             if (applicationHaveAuthentication) {
                 constructorParameters.add("JWTAuth jwtAuth");
@@ -272,8 +272,8 @@ public class ControllerProcessor extends AbstractProcessor {
                             "            router.get(\"/health\").handler(routingContext -> routingContext.response().end(\"OK\"));\n" +
                             "            router.get(\"/starting_probe\").handler(routingContext -> {\n" +
                             "                routingContext.response().end(\"OK\");\n" +
-                            "            });\n" +
-                            "            %s\n" +
+                            "            });\n\n" +
+                            "            %s" +
                             "            final String portString = CommonConstant.applicationConfig.getProperty(\"server.port\");\n" +
                             "            int port;\n" +
                             "            if (MyStringUtils.isNotBlank(portString) && MyStringUtils.isNumeric(portString)) {\n" +
