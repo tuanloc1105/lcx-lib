@@ -8,6 +8,7 @@ import vn.com.lcx.common.utils.ExceptionUtils;
 import vn.com.lcx.common.utils.LogUtils;
 
 import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
 import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.PasswordAuthentication;
@@ -22,6 +23,7 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import java.io.File;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -67,6 +69,7 @@ public final class MailHelper {
                 break;
             case UAT:
             case LIVE_NO_TRUST:
+            default:
                 properties.setProperty("mail.smtp.host", mailProperties.getHost());
                 properties.setProperty("mail.smtp.ssl.protocols", "TLSv1.2");
                 properties.setProperty("mail.smtp.auth", "true");
@@ -145,6 +148,17 @@ public final class MailHelper {
                     );
 
                     multipart.addBodyPart(mimeBodyPart);
+
+                    for (String filePath : mailInfo.getFileAttachments()) {
+                        val fileMimeBodyPart = new MimeBodyPart();
+                        try {
+                            fileMimeBodyPart.attachFile(new File(filePath));
+                            multipart.addBodyPart(fileMimeBodyPart);
+                        } catch (Exception e) {
+                            LogUtils.writeLog(LogUtils.Level.WARN, e.getMessage());
+                        }
+                    }
+
                     message.setContent(multipart);
                     message.saveChanges();
                     LogUtils.writeLog(

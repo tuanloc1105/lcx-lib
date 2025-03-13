@@ -30,5 +30,6 @@ public class MailProperties {
         private List<String> bccUser;
         private String subject;
         private String body;
+        private List<String> fileAttachments;
     }
 }
