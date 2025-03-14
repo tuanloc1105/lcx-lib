@@ -34,6 +34,28 @@ public final class MyCollectionUtils {
         return batches;
     }
 
+    public static <T> List<List<T>> splitListIntoBatches(List<T> inputList, int maxBatches) {
+        if (maxBatches == 0) {
+            maxBatches = 8;
+        }
+        int totalSize = inputList.size();
+
+        // Determine batch size dynamically so all elements are included
+        int batchSize = (int) Math.ceil((double) totalSize / maxBatches);
+
+        List<List<T>> batches = new ArrayList<>(maxBatches);
+
+        for (int i = 0; i < maxBatches; i++) {
+            int fromIndex = i * batchSize;
+            int toIndex = Math.min(fromIndex + batchSize, totalSize);
+            if (fromIndex < totalSize) {
+                batches.add(new ArrayList<>(inputList.subList(fromIndex, toIndex)));
+            }
+        }
+
+        return batches;
+    }
+
     public static <T> void removeNullElement(final Collection<T> collection) {
         Collection<T> nonNullCollection = collection.stream().filter(Objects::nonNull).collect(Collectors.toList());
         collection.clear();
