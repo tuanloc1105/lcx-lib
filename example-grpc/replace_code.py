@@ -20,6 +20,6 @@ def list_files(directory):
                 with open(file_path, 'w') as f:
                     f.write(content)
 
-directory = './src'
+directory = './src/main/java/com/example/grpc'
 
 list_files(directory)
