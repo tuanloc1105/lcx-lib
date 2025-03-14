@@ -4,7 +4,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MyCollectionUtils {
@@ -29,6 +32,12 @@ public final class MyCollectionUtils {
         }
 
         return batches;
+    }
+
+    public static <T> void removeNullElement(final Collection<T> collection) {
+        Collection<T> nonNullCollection = collection.stream().filter(Objects::nonNull).collect(Collectors.toList());
+        collection.clear();
+        collection.addAll(nonNullCollection);
     }
 
 }
