@@ -38,8 +38,8 @@ public class MyExecutor<T> {
             );
         }
         List<T> results = new ArrayList<>(callables.size());
+        ExecutorService executor = Executors.newFixedThreadPool(numberOfCorePoolSize);
         try {
-            ExecutorService executor = Executors.newFixedThreadPool(numberOfCorePoolSize);
             List<Future<T>> futures;
             if (timeout <= 0 || unit == null) {
                 futures = executor.invokeAll(callables);
@@ -63,7 +63,10 @@ public class MyExecutor<T> {
             }
             executor.shutdown();
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new RuntimeException(e);
+        } finally {
+            executor.shutdown();
         }
         return results;
     }

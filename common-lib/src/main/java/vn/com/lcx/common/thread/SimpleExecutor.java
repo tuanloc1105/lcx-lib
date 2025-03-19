@@ -121,8 +121,8 @@ public class SimpleExecutor<T> implements BaseExecutor<T> {
                 this.unit.toString()
         );
         List<T> result = new ArrayList<>(this.taskList.size());
+        ExecutorService executor = this.createExecutorService();
         try {
-            ExecutorService executor = this.createExecutorService();
             List<Future<T>> futures;
             if (this.timeout <= 0 || this.unit == null) {
                 futures = executor.invokeAll(this.taskList);
@@ -140,10 +140,11 @@ public class SimpleExecutor<T> implements BaseExecutor<T> {
                     // throw new RuntimeException("Task failed due to " + e, e);
                 }
             }
-
-            executor.shutdown();
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new RuntimeException(e);
+        } finally {
+            executor.shutdown();
         }
         return result;
     }
