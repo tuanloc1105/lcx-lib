@@ -137,7 +137,7 @@ public class SimpleExecutor<T> implements BaseExecutor<T> {
                 } catch (Throwable e) {
                     future.cancel(true);
                     futures.forEach(this::cancelFutureTasks);
-                    throw new RuntimeException("Task failed due to " + e, e);
+                    // throw new RuntimeException("Task failed due to " + e, e);
                 }
             }
 
