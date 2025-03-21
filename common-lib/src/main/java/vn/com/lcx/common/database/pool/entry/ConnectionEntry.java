@@ -168,10 +168,16 @@ public final class ConnectionEntry implements AutoCloseable {
     }
 
     public void openTransaction() {
+        this.openTransaction(TransactionIsolation.TRANSACTION_READ_COMMITTED);
+    }
+
+    public void openTransaction(TransactionIsolation transactionIsolation) {
         try {
             if (this.transactionIsOpen()) {
                 return;
             }
+            //noinspection MagicConstant
+            connection.setTransactionIsolation(transactionIsolation.getValue());
             connection.setAutoCommit(false);
             this.connectionLog.info("Open transaction");
         } catch (SQLException e) {
@@ -229,6 +235,18 @@ public final class ConnectionEntry implements AutoCloseable {
     @Override
     public void close() {
         this.deactivate();
+    }
+
+    @AllArgsConstructor
+    @Getter
+    public static enum TransactionIsolation {
+        TRANSACTION_NONE(Connection.TRANSACTION_NONE),
+        TRANSACTION_READ_UNCOMMITTED(Connection.TRANSACTION_READ_UNCOMMITTED),
+        TRANSACTION_READ_COMMITTED(Connection.TRANSACTION_READ_COMMITTED),
+        TRANSACTION_REPEATABLE_READ(Connection.TRANSACTION_REPEATABLE_READ),
+        TRANSACTION_SERIALIZABLE(Connection.TRANSACTION_SERIALIZABLE),
+        ;
+        private final int value;
     }
 
 }
