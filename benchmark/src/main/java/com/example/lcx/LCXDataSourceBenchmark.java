@@ -15,6 +15,7 @@ import vn.com.lcx.common.database.pool.LCXDataSource;
 import vn.com.lcx.common.database.pool.entry.ConnectionEntry;
 import vn.com.lcx.common.database.type.DBTypeEnum;
 
+import java.sql.PreparedStatement;
 import java.util.concurrent.TimeUnit;
 
 @BenchmarkMode(Mode.Throughput)

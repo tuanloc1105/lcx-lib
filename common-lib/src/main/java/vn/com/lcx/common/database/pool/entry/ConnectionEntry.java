@@ -84,15 +84,15 @@ public final class ConnectionEntry implements AutoCloseable {
         return entry;
     }
 
-    public synchronized void lock() {
+    public void lock() {
         this.idle.set(false);
     }
 
-    public synchronized boolean isActive() {
+    public boolean isActive() {
         return !this.idle.get();
     }
 
-    public synchronized void releaseLock() {
+    public void releaseLock() {
         this.idle.set(true);
     }
 

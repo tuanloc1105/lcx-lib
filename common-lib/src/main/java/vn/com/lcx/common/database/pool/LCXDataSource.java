@@ -40,6 +40,7 @@ public class LCXDataSource {
     private final DatabaseProperty property;
     private final SimpleExecutor<Boolean> myExecutor;
     private final DBTypeEnum dbType;
+    private final int maxPoolWaitingTime;
     @Getter(AccessLevel.PRIVATE)
     private final ConcurrentLinkedQueue<ConnectionEntry> pool;
 
@@ -88,6 +89,7 @@ public class LCXDataSource {
                         property,
                         simpleExecutor,
                         dbType,
+                        30_000,
                         new ConcurrentLinkedQueue<>()
                 );
                 lcxPool.create(
@@ -191,8 +193,12 @@ public class LCXDataSource {
                 entry.activate();
                 return entry;
             }
+            LogUtils.writeLog(LogUtils.Level.INFO, "All connections in pool are being used");
             long startTime = System.currentTimeMillis();
-            while (System.currentTimeMillis() - startTime < 30_000) {
+            long waitedTime = System.currentTimeMillis() - startTime;
+            while (waitedTime < maxPoolWaitingTime) {
+                waitedTime = System.currentTimeMillis() - startTime;
+                LogUtils.writeLog(LogUtils.Level.INFO, "Waited {} ms", waitedTime);
                 val currentTime = DateTimeUtils.generateCurrentTimeDefault();
                 val entry = this.pool.stream()
                         .sorted(Comparator.comparing(ConnectionEntry::getLastActiveTime))
