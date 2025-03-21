@@ -1,0 +1,21 @@
+server:
+  api-key: szt995RHr033WwY616SWj831YAS346bK
+  port: 8123
+  enable-http-2: true
+database:
+  my_database:
+    host: localhost
+    port: '5432'
+    username: postgres
+    password: postgres
+    driver_class_name: org.postgresql.Driver
+    name: my_database
+  max_pool_size: 10
+  initial_pool_size: 5
+  max_timeout: 10
+  source_type: postgresql
+  scan_package: vn.com.hdbank.vertx.lms.entity
+  generate_sql: true
+way4gw:
+  host: 10.225.234.148
+  port: 6090

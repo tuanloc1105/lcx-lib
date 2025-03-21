@@ -23,6 +23,7 @@ import java.nio.file.StandardOpenOption;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Getter
 @EqualsAndHashCode
@@ -44,19 +45,9 @@ public final class ConnectionEntry implements AutoCloseable {
     private String connectionName;
 
     @Setter(AccessLevel.PRIVATE)
-    private File file;
-
-    @Setter(AccessLevel.PRIVATE)
-    private FileChannel channel;
-
-    @Setter(AccessLevel.PRIVATE)
-    private FileLock lock;
-
-    @Setter(AccessLevel.PRIVATE)
     private Logger connectionLog;
 
-    @Setter(AccessLevel.PRIVATE)
-    private boolean idle;
+    private AtomicBoolean idle;
 
     @Setter
     private boolean criticalLock;
@@ -84,11 +75,8 @@ public final class ConnectionEntry implements AutoCloseable {
                 DateTimeUtils.generateCurrentTimeDefault(),
                 dbType,
                 connectionName,
-                file,
-                null,
-                null,
                 logger,
-                true,
+                new AtomicBoolean(true),
                 false
         );
 
@@ -97,47 +85,22 @@ public final class ConnectionEntry implements AutoCloseable {
     }
 
     public synchronized void lock() {
-        try {
-            if (this.lock != null) {
-                throw new RuntimeException("Connection is activating");
-            }
-            if (this.channel == null) {
-                this.channel = FileChannel.open(Paths.get(file.getAbsolutePath()), StandardOpenOption.WRITE);
-            }
-            this.lock = this.channel.tryLock();
-            if (this.lock == null) {
-                throw new RuntimeException("Cannot acquire lock on connection");
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        this.idle.set(false);
     }
 
     public synchronized boolean isActive() {
-        return this.lock != null;
+        return !this.idle.get();
     }
 
     public synchronized void releaseLock() {
-        if (this.lock == null) {
-            this.connectionLog.info("Connection is not being locked");
-            return;
-        }
-        try {
-            this.lock.release();
-            this.lock.close();
-            this.channel.close();
-            this.lock = null;
-            this.channel = null;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        this.idle.set(true);
     }
 
     public void activate() {
-        if (this.isIdle()) {
+        if (this.idle.get()) {
             this.lock();
             this.lastActiveTime = DateTimeUtils.generateCurrentTimeDefault();
-            this.setIdle(false);
+            this.idle.set(false);
             this.getConnectionLog().info("Activated connection entry: {}", this);
             return;
         }
@@ -145,14 +108,14 @@ public final class ConnectionEntry implements AutoCloseable {
     }
 
     public void deactivate() {
-        if (this.isIdle()) {
+        if (this.idle.get()) {
             throw new RuntimeException("Connection is idling");
         }
         this.lastActiveTime = DateTimeUtils.generateCurrentTimeDefault();
         if (transactionIsOpen()) {
             this.commit();
         }
-        this.setIdle(true);
+        this.idle.set(true);
         this.releaseLock();
         this.getConnectionLog().info("Deactivated connection entry: {}", this);
     }

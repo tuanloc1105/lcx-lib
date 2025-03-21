@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 import vn.com.lcx.common.database.DatabaseProperty;
 import vn.com.lcx.common.database.pool.entry.ConnectionEntry;
+import vn.com.lcx.common.database.pool.wrapper.LCXConnection;
 import vn.com.lcx.common.database.type.DBTypeEnum;
 import vn.com.lcx.common.thread.RejectMode;
 import vn.com.lcx.common.thread.SimpleExecutor;
@@ -25,8 +26,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 
 import static vn.com.lcx.common.utils.RandomUtils.generateRandomString;
@@ -41,9 +41,9 @@ public class LCXDataSource {
     private final SimpleExecutor<Boolean> myExecutor;
     private final DBTypeEnum dbType;
     @Getter(AccessLevel.PRIVATE)
-    private final CopyOnWriteArrayList<ConnectionEntry> pool;
+    private final ConcurrentLinkedQueue<ConnectionEntry> pool;
 
-    private final transient Object lock = new Object();
+    // private final transient Object lock = new Object();
 
     private static Connection createConnection(String url, String user, String password, int maxTimeoutSecond) throws SQLException, ClassNotFoundException {
         DriverManager.setLoginTimeout(maxTimeoutSecond);
@@ -88,7 +88,7 @@ public class LCXDataSource {
                         property,
                         simpleExecutor,
                         dbType,
-                        new CopyOnWriteArrayList<>()
+                        new ConcurrentLinkedQueue<>()
                 );
                 lcxPool.create(
                         property.getConnectionString(),
@@ -100,8 +100,6 @@ public class LCXDataSource {
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                     LoggerFactory.getLogger(databaseName).info("Shutting down pool");
                     for (ConnectionEntry entry : lcxPool.getPool()) {
-                        //noinspection ResultOfMethodCallIgnored
-                        entry.getFile().delete();
                         try {
                             if (entry.transactionIsOpen()) {
                                 entry.commit();
@@ -178,22 +176,23 @@ public class LCXDataSource {
                     return connectionEntry;
                 }
             }
-            synchronized (lock) {
-                if (this.pool.size() < this.property.getMaxPoolSize()) {
-                    val entry = ConnectionEntry.init(
-                            createConnection(
-                                    this.property.getConnectionString(),
-                                    this.property.getUsername(),
-                                    this.property.getPassword(),
-                                    this.property.getMaxTimeout()
-                            ),
-                            this.dbType,
-                            String.format("%s-%s", this.dbType.name().toLowerCase(), generateRandomString(8))
-                    );
-                    this.pool.add(entry);
-                    entry.activate();
-                    return entry;
-                }
+            if (this.pool.size() < this.property.getMaxPoolSize()) {
+                val entry = ConnectionEntry.init(
+                        createConnection(
+                                this.property.getConnectionString(),
+                                this.property.getUsername(),
+                                this.property.getPassword(),
+                                this.property.getMaxTimeout()
+                        ),
+                        this.dbType,
+                        String.format("%s-%s", this.dbType.name().toLowerCase(), generateRandomString(8))
+                );
+                this.pool.add(entry);
+                entry.activate();
+                return entry;
+            }
+            long startTime = System.currentTimeMillis();
+            while (System.currentTimeMillis() - startTime < 30_000) {
                 val currentTime = DateTimeUtils.generateCurrentTimeDefault();
                 val entry = this.pool.stream()
                         .sorted(Comparator.comparing(ConnectionEntry::getLastActiveTime))
@@ -201,11 +200,13 @@ public class LCXDataSource {
                             val durationBetweenLastTimeActiveAndCurrentTime = Duration.between(e.getLastActiveTime(), currentTime);
                             return durationBetweenLastTimeActiveAndCurrentTime.compareTo(Duration.of(30, ChronoUnit.SECONDS)) >= 0 && !e.isCriticalLock();
                         })
-                        .findFirst()
-                        .orElseThrow(() -> new RuntimeException("All connection in pool is busy"));
-                entry.commit();
-                entry.shutdown();
-                entry.setConnection(
+                        .findFirst();
+                if (!entry.isPresent()) {
+                    continue;
+                }
+                entry.get().commit();
+                entry.get().shutdown();
+                entry.get().setConnection(
                         createConnection(
                                 this.property.getConnectionString(),
                                 this.property.getUsername(),
@@ -213,10 +214,11 @@ public class LCXDataSource {
                                 this.property.getMaxTimeout()
                         )
                 );
-                entry.deactivate();
-                entry.activate();
-                return entry;
+                entry.get().deactivate();
+                entry.get().activate();
+                return entry.get();
             }
+            throw new RuntimeException("All connection in pool is busy");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -249,11 +251,11 @@ public class LCXDataSource {
     }
 
     public int getActiveConnections() {
-        return (int) this.pool.stream().filter(con -> !con.isIdle()).count();
+        return (int) this.pool.stream().filter(con -> !con.getIdle().get()).count();
     }
 
     public int getIdleConnections() {
-        return (int) this.pool.stream().filter(ConnectionEntry::isIdle).count();
+        return (int) this.pool.stream().filter(con -> con.getIdle().get()).count();
     }
 
     public void validateEntry(final ConnectionEntry entry) {
