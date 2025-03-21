@@ -9,7 +9,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 import vn.com.lcx.common.database.DatabaseProperty;
 import vn.com.lcx.common.database.pool.entry.ConnectionEntry;
-import vn.com.lcx.common.database.pool.wrapper.LCXConnection;
 import vn.com.lcx.common.database.type.DBTypeEnum;
 import vn.com.lcx.common.thread.RejectMode;
 import vn.com.lcx.common.thread.SimpleExecutor;
