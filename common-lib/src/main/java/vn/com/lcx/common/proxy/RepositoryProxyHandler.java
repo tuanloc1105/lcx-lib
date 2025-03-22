@@ -28,26 +28,10 @@ public class RepositoryProxyHandler<T> implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        if (method.isDefault()) {
-            return invokeDefaultMethod(proxy, method, args);
-        }
-        String methodName = method.getName();
-
-        // Handle Object's built-in methods separately
-        switch (methodName) {
-            case "toString":
-                return target.getClass().getName() + "@" + Integer.toHexString(target.hashCode());
-            case "hashCode":
-                return System.identityHashCode(proxy);
-            case "equals":
-                return proxy == args[0];
-        }
-
-        this.log.info("Executing method: {}", methodName);
         try {
             return method.invoke(target, args);
-        }catch (Exception e) {
-            throw new RuntimeException("Cannot invoke method: " + methodName);
+        } catch (Exception e) {
+            throw new RuntimeException("Error " + method.getName());
         }
     }
 
