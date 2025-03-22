@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import vn.com.lcx.common.database.DatabaseProperty;
 import vn.com.lcx.common.database.pool.entry.ConnectionEntry;
 import vn.com.lcx.common.database.type.DBTypeEnum;
+import vn.com.lcx.common.exception.LCXDataSourceException;
+import vn.com.lcx.common.exception.LCXDataSourcePropertiesException;
 import vn.com.lcx.common.thread.RejectMode;
 import vn.com.lcx.common.thread.SimpleExecutor;
 import vn.com.lcx.common.utils.DateTimeUtils;
@@ -113,10 +115,10 @@ public class LCXDataSource {
                 }));
                 return lcxPool;
             }
-            throw new RuntimeException("Database properties is not all set");
+            throw new LCXDataSourcePropertiesException("Database properties is not all set");
         } catch (Exception e) {
             LogUtils.writeLog2(e.getMessage(), e);
-            throw new RuntimeException(e);
+            throw new LCXDataSourceException(e);
         }
     }
 
@@ -223,9 +225,9 @@ public class LCXDataSource {
                 entry.get().activate();
                 return entry.get();
             }
-            throw new RuntimeException("All connection in pool is busy");
+            throw new LCXDataSourceException("All connection in pool is busy");
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new LCXDataSourceException(e);
         }
     }
 
@@ -246,7 +248,7 @@ public class LCXDataSource {
             }
         } catch (SQLException | ClassNotFoundException e) {
             LogUtils.writeLog2(e.getMessage(), e);
-            throw new RuntimeException(e);
+            throw new LCXDataSourceException(e);
         }
         return databaseVersion;
     }
@@ -278,7 +280,7 @@ public class LCXDataSource {
                 entry.setConnection(newConnection);
                 return;
             } catch (SQLException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
+                throw new LCXDataSourceException(e);
             }
         }
         throw new IllegalArgumentException("Invalid connection: " + entry.getConnectionName());

@@ -2,6 +2,7 @@ package vn.com.lcx.common.utils;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import vn.com.lcx.common.exception.CacheException;
 
 import java.time.Duration;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,13 +17,18 @@ public class CacheUtils<K, V> {
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     public static <K, V> CacheUtils<K, V> create(int capacity) {
+
+        if (capacity < 1) {
+            throw new CacheException("Invalid cache capacity");
+        }
+
         return new CacheUtils<>(capacity, new ConcurrentHashMap<>(capacity));
     }
 
     // Method to add items to the cache
     public void put(K key, V value) {
         if (this.cache.size() >= this.capacity) {
-            throw new IllegalStateException("Cache is full");
+            throw new CacheException("Cache is full");
         }
         this.cache.put(key, value);
     }
@@ -30,7 +36,7 @@ public class CacheUtils<K, V> {
     // Method to add items to the cache
     public void put(K key, V value, Duration duration) {
         if (this.cache.size() >= this.capacity) {
-            throw new IllegalStateException("Cache is full");
+            throw new CacheException("Cache is full");
         }
         // new Timer().schedule(
         //         new TimerTask() {
